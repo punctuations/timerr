@@ -1,7 +1,9 @@
 import Head from "next/head";
 import { useState, ChangeEvent } from "react";
+import { useKeyPressEvent } from "react-use";
 import { motion } from "framer-motion";
 import { TextField, Checkbox } from "@material-ui/core";
+import { Toaster, toast } from "react-hot-toast";
 
 export default function Home() {
 	const [stage, setStage] = useState(0);
@@ -15,6 +17,25 @@ export default function Home() {
 	const handleNotify = (event: ChangeEvent<HTMLInputElement>) => {
 		setNotifyPref(event.target.checked);
 	};
+
+	const decrement = () => {
+		if (stage > 0) {
+			setStage((count) => --count);
+		}
+	};
+
+	const increment = () => {
+		if (stage < 3) {
+			setStage((count) => ++count);
+		}
+	};
+
+	useKeyPressEvent("ArrowLeft", decrement);
+	useKeyPressEvent("ArrowRight", increment);
+
+	const createTimer = new Promise<String>((resolve, reject) => {
+		reject("Currently under development.");
+	});
 
 	const container = {
 		init: { opacity: 0, y: 10 },
@@ -46,7 +67,7 @@ export default function Home() {
 					initial="init"
 					animate="enter"
 				>
-					<p className="flex space-x-3 justify-center items-center">
+					<section className="flex space-x-3 justify-center items-center">
 						<a
 							className="text-gray-400 font-medium transition-all duration-500 hover:text-opacity-75"
 							href="/"
@@ -119,7 +140,7 @@ export default function Home() {
 								</a>
 							</>
 						) : null}
-					</p>
+					</section>
 				</motion.nav>
 				<motion.section
 					className="flex flex-col justify-center items-center space-y-10"
@@ -225,7 +246,16 @@ export default function Home() {
 					</motion.section>
 
 					{stage >= 3 ? (
-						<motion.button className="focus:outline-none transition-colors duration-300 border-gray-200 hover:border-blue-500 hover:text-blue-500 border p-3 rounded-md">
+						<motion.button
+							onClick={() => {
+								toast.promise(createTimer, {
+									loading: "Creating...",
+									success: <b>Timer created!</b>,
+									error: <b>Timer could not be created.</b>,
+								});
+							}}
+							className="focus:outline-none transition-colors duration-300 border-gray-200 hover:border-blue-500 hover:text-blue-500 border p-3 rounded-md"
+						>
 							Done &rarr;
 						</motion.button>
 					) : (
@@ -255,6 +285,7 @@ export default function Home() {
 					</a>
 				</footer>
 			</main>
+			<Toaster position="bottom-right" reverseOrder={true} />
 		</>
 	);
 }
