@@ -1,9 +1,11 @@
 import Head from "next/head";
+import * as crypto from "crypto";
 import { useState, ChangeEvent } from "react";
 import { useKeyPressEvent } from "react-use";
 import { motion } from "framer-motion";
 import { TextField, Checkbox } from "@material-ui/core";
 import { Toaster, toast } from "react-hot-toast";
+import { resolveValueOrFunction } from "react-hot-toast/dist/core/types";
 
 export default function Home() {
 	const [stage, setStage] = useState(0);
@@ -34,7 +36,9 @@ export default function Home() {
 	useKeyPressEvent("ArrowRight", increment);
 
 	const createTimer = new Promise<String>((resolve, reject) => {
-		reject("Currently under development.");
+		resolve(crypto.randomBytes(20).toString("hex"));
+	}).catch((err) => {
+		console.log(err);
 	});
 
 	const container = {
@@ -250,7 +254,7 @@ export default function Home() {
 							onClick={() => {
 								toast.promise(createTimer, {
 									loading: "Creating...",
-									success: <b>Timer created!</b>,
+									success: (data) => `Timer created @ ${data}`,
 									error: <b>Timer could not be created.</b>,
 								});
 							}}
