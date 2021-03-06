@@ -5,7 +5,6 @@ import { useKeyPressEvent } from "react-use";
 import { motion } from "framer-motion";
 import { TextField, Checkbox } from "@material-ui/core";
 import { Toaster, toast } from "react-hot-toast";
-import { resolveValueOrFunction } from "react-hot-toast/dist/core/types";
 
 export default function Home() {
 	const [stage, setStage] = useState(0);
