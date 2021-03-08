@@ -4,7 +4,6 @@ import { useState, ChangeEvent } from "react";
 import { useKeyPressEvent } from "react-use";
 import { motion } from "framer-motion";
 import { TextField, Checkbox } from "@material-ui/core";
-import { Toaster, toast } from "react-hot-toast";
 
 export default function Home() {
 	const [stage, setStage] = useState(0);
@@ -286,7 +285,6 @@ export default function Home() {
 					</a>
 				</footer>
 			</main>
-			<Toaster position="bottom-right" reverseOrder={true} />
 		</>
 	);
 }
