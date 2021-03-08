@@ -92,7 +92,7 @@ const Dashboard = () => {
 								Timerr &rarr;
 							</motion.h3>
 							<motion.p variants={item} className="text-sm">
-								Get started with your timer by starting it and veiwing it!
+								Get started with your timer by starting it and viewing it!
 							</motion.p>
 						</motion.a>
 					</div>
