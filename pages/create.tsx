@@ -251,11 +251,9 @@ export default function Home() {
 					{stage >= 3 ? (
 						<motion.button
 							onClick={() => {
-								toast.promise(createTimer, {
-									loading: "Creating...",
-									success: (data) => `Timer created @ ${data}`,
-									error: <b>Timer could not be created.</b>,
-								});
+								createTimer.then(
+									(data) => (window.location.href = `/dashboard/${data}`)
+								);
 							}}
 							className="focus:outline-none transition-colors duration-300 border-gray-200 hover:border-blue-500 hover:text-blue-500 border p-3 rounded-md"
 						>
