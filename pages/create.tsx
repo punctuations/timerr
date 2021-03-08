@@ -60,7 +60,7 @@ export default function Home() {
 	return (
 		<>
 			<Head>
-				<title>Timer</title>
+				<title>Timerr - Create</title>
 			</Head>
 			<main className="absolute w-full h-full flex flex-col justify-center items-center select-none">
 				<motion.nav
@@ -151,7 +151,7 @@ export default function Home() {
 					animate="enter"
 				>
 					<motion.h1 variants={item} className="text-6xl font-semibold">
-						Timer
+						Timerr
 					</motion.h1>
 
 					<motion.section

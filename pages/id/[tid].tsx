@@ -4,7 +4,7 @@ const Timer = () => {
 	const router = useRouter();
 	const { tid } = router.query;
 
-	return <p>Your timer ID is: {tid}</p>;
+	return <p>Your Timerr ID is: {tid}</p>;
 };
 
 export default Timer;

@@ -36,7 +36,7 @@ export default function Home() {
 	return (
 		<>
 			<Head>
-				<title>Timer</title>
+				<title>Timerr</title>
 			</Head>
 			<main className="absolute w-full h-full flex flex-col justify-center items-center select-none">
 				<motion.section
@@ -50,7 +50,7 @@ export default function Home() {
 						className="flex flex-col items-center"
 					>
 						<motion.h1 variants={item} className="text-6xl font-semibold">
-							Timer
+							Timerr
 						</motion.h1>
 						<motion.p variants={item}>
 							Get started below and create a new timer!

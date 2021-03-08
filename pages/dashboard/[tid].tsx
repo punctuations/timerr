@@ -40,7 +40,7 @@ const Dashboard = () => {
 	return (
 		<>
 			<Head>
-				<title>Timer</title>
+				<title>Timerr</title>
 			</Head>
 			<motion.p
 				variants={item}
@@ -89,7 +89,7 @@ const Dashboard = () => {
 							variants={subContainer}
 						>
 							<motion.h3 variants={item} className="text-3xl">
-								Timer &rarr;
+								Timerr &rarr;
 							</motion.h3>
 							<motion.p variants={item} className="text-sm">
 								Get started with your timer by starting it and veiwing it!
