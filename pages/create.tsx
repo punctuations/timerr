@@ -6,9 +6,9 @@ import { useKeyPressEvent } from "react-use";
 import { motion } from "framer-motion";
 import { TextField, Checkbox } from "@material-ui/core";
 
-const router = useRouter();
-
 export default function Home() {
+	const router = useRouter();
+
 	const [stage, setStage] = useState(0);
 	const [name, setName] = useState("My timer");
 	const [time, setTime] = useState(Date.now());
