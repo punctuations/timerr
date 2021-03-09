@@ -4,10 +4,11 @@
 	"private": true,
 	"scripts": {
 		"dev": "next dev",
-		"build": "next build",
+		"build": "yarn migrate:prod && next build",
 		"start": "next start",
 		"prisma:generate": "prisma generate",
-		"prisma:migrate": "prisma migrate dev --preview-feature"
+		"prisma:migrate": "prisma migrate dev --preview-feature",
+		"migrate:prod": "prisma migrate deploy --preview-feature"
 	},
 	"dependencies": {
 		"@material-ui/core": "^4.11.3",
