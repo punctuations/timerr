@@ -1,22 +1,21 @@
 import Head from "next/head";
+import { useRouter } from "next/router";
 import * as crypto from "crypto";
 import { useState, ChangeEvent } from "react";
 import { useKeyPressEvent } from "react-use";
 import { motion } from "framer-motion";
 import { TextField, Checkbox } from "@material-ui/core";
 
+const router = useRouter();
+
 export default function Home() {
 	const [stage, setStage] = useState(0);
+	const [name, setName] = useState("My timer");
+	const [time, setTime] = useState(Date.now());
 	const [checked, setChecked] = useState(false);
 	const [notifyPref, setNotifyPref] = useState(true);
 
-	const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-		setChecked(event.target.checked);
-	};
-
-	const handleNotify = (event: ChangeEvent<HTMLInputElement>) => {
-		setNotifyPref(event.target.checked);
-	};
+	fetch("/api/hello").then((r) => console.log(r));
 
 	const decrement = () => {
 		if (stage > 0) {
@@ -32,6 +31,20 @@ export default function Home() {
 
 	useKeyPressEvent("ArrowLeft", decrement);
 	useKeyPressEvent("ArrowRight", increment);
+
+	function submitTimer() {
+		fetch("/api/hello", {
+			method: "POST",
+			body: JSON.stringify({
+				name: name,
+				time: time,
+				childLock: checked,
+				notifyPref: notifyPref,
+			}),
+		});
+
+		createTimer.then((data) => router.push(`/dashboard/${data}`));
+	}
 
 	const createTimer = new Promise<String>((resolve, reject) => {
 		resolve(crypto.randomBytes(20).toString("hex"));
@@ -181,6 +194,9 @@ export default function Home() {
 										inputProps={{
 											step: 300, // 5 min
 										}}
+										onChange={(e: ChangeEvent<HTMLInputElement>) =>
+											setName(e.target.value)
+										}
 									/>
 								</motion.form>
 							</>
@@ -209,6 +225,9 @@ export default function Home() {
 										inputProps={{
 											step: 300, // 5 min
 										}}
+										onChange={(e: ChangeEvent<HTMLInputElement>) =>
+											console.log(e.target.valueAsNumber)
+										}
 									/>
 								</motion.form>
 							</>
@@ -223,7 +242,9 @@ export default function Home() {
 								<motion.div variants={item}>
 									<Checkbox
 										checked={checked}
-										onChange={handleChange}
+										onChange={(e: ChangeEvent<HTMLInputElement>) =>
+											setChecked(e.target.checked)
+										}
 										inputProps={{ "aria-label": "primary checkbox" }}
 									/>
 								</motion.div>
@@ -239,7 +260,9 @@ export default function Home() {
 								<motion.div variants={item}>
 									<Checkbox
 										checked={notifyPref}
-										onChange={handleNotify}
+										onChange={(e: ChangeEvent<HTMLInputElement>) =>
+											setNotifyPref(e.target.checked)
+										}
 										inputProps={{ "aria-label": "primary checkbox" }}
 									/>
 								</motion.div>
@@ -250,9 +273,7 @@ export default function Home() {
 					{stage >= 3 ? (
 						<motion.button
 							onClick={() => {
-								createTimer.then(
-									(data) => (window.location.href = `/dashboard/${data}`)
-								);
+								submitTimer();
 							}}
 							className="focus:outline-none transition-colors duration-300 border-gray-200 hover:border-blue-500 hover:text-blue-500 border p-3 rounded-md"
 						>
