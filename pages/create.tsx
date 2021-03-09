@@ -170,7 +170,7 @@ export default function Home() {
 									noValidate
 								>
 									<TextField
-										id="time"
+										id="name"
 										label="Name"
 										type="text"
 										defaultValue="My Timer"
