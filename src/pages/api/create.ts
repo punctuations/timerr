@@ -1,9 +1,11 @@
 import prisma from "../../lib/db";
 import { NextApiRequest, NextApiResponse } from "next";
 
-export default (req: NextApiRequest, res: NextApiResponse) => {
+export default async (req: NextApiRequest, res: NextApiResponse) => {
+  // Is method POST?
   if (req.method == "POST") {
-    prisma.timer
+    // Method is post, add new timer
+    await prisma.timer
       .create({
         data: {
           name: req.body.name,
@@ -13,7 +15,10 @@ export default (req: NextApiRequest, res: NextApiResponse) => {
         },
       })
       .catch((err) => console.log(err));
+
+    return res.status(200).json({ success: true });
+  } else {
+    // Method is not POST, return 504 method not allowed
+    return res.status(504).json({ success: false, data: "Method not allowed" });
   }
-  res.statusCode = 200;
-  res.json({ name: "John Doe" });
 };

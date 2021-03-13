@@ -31,15 +31,23 @@ export default function Home() {
   useKeyPressEvent("ArrowRight", increment);
 
   function submitTimer() {
-    fetch("https://timerr-gamma.vercel.app/api/hello", {
-      method: "POST",
-      body: JSON.stringify({
-        name: name,
-        time: time,
-        childLock: checked,
-        notifyPref: notifyPref,
-      }),
-    })
+    fetch(
+      process.env.NODE_ENV === "development"
+        ? "http://localhost:3000/api/create"
+        : "https://timerr-one.vercel.app/api/create",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          name: name,
+          time: time,
+          childLock: checked,
+          notifyPref: notifyPref,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
       .then((res) => res.json())
       .then((body) => console.log(body));
 
