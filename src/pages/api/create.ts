@@ -4,7 +4,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   // Is method POST?
   if (req.method == "POST") {
-    // Method is post, add new timer
+    // Method is post, add new timer, good place to check if all fields are in req.body
     await prisma.timer
       .create({
         data: {
