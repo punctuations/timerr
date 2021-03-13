@@ -15,7 +15,7 @@ export default function Home() {
 	const [checked, setChecked] = useState(false);
 	const [notifyPref, setNotifyPref] = useState(true);
 
-	fetch("/api/hello").then((r) => console.log(r));
+	fetch("https://timerr-gamma.vercel.app/api/hello").then((r) => console.log(r));
 
 	const decrement = () => {
 		if (stage > 0) {
