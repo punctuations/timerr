@@ -15,11 +15,6 @@ export default function Home() {
   const [checked, setChecked] = useState(false);
   const [notifyPref, setNotifyPref] = useState(true);
 
-  fetch("https://timerr-gamma.vercel.app/api/hello").then((r) =>
-    console.log(r)
-  );
-  //fetch("http://localhost:3000/api/hello").then((r) => console.log(r));
-
   const decrement = () => {
     if (stage > 0) {
       setStage((count) => --count);
@@ -36,7 +31,7 @@ export default function Home() {
   useKeyPressEvent("ArrowRight", increment);
 
   function submitTimer() {
-    fetch("/api/hello", {
+    fetch("https://timerr-gamma.vercel.app/api/hello", {
       method: "POST",
       body: JSON.stringify({
         name: name,
@@ -44,7 +39,9 @@ export default function Home() {
         childLock: checked,
         notifyPref: notifyPref,
       }),
-    });
+    })
+      .then((res) => res.json())
+      .then((body) => console.log(body));
 
     createTimer.then((data) => router.push(`/dashboard/${data}`));
   }
