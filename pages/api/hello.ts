@@ -11,7 +11,7 @@ export default (req: NextApiRequest, res: NextApiResponse) => {
 				childLock: req.body.childLock,
 				timeLeft: 0,
 			},
-		})
+		}).catch(err => console.log(err))
   }
   res.statusCode = 200;
   res.json({ name: 'John Doe' });
