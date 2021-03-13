@@ -3,11 +3,11 @@
 	"version": "0.1.0",
 	"private": true,
 	"scripts": {
-		"dev": "next dev",
-		"build": "yarn migrate:prod && next build",
+		"dev": "next",
+		"build": "next build",
 		"start": "next start",
 		"prisma:generate": "prisma generate",
-		"prisma:migrate": "prisma migrate dev --preview-feature",
+		":migrate:dev": "prisma migrate dev --preview-feature",
 		"migrate:prod": "prisma migrate deploy --preview-feature"
 	},
 	"dependencies": {
