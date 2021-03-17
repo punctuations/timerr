@@ -10,6 +10,8 @@
 		":migrate:dev": "prisma migrate dev --preview-feature",
 		"migrate:prod": "prisma migrate deploy --preview-feature"
 	},
+	"author": "Matt <matt@dont-ping.me>",
+	"license": "MIT",
 	"dependencies": {
 		"@material-ui/core": "^4.11.3",
 		"@prisma/client": "^2.18.0",
