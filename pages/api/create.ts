@@ -8,6 +8,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     await prisma.timer
       .create({
         data: {
+          timerUUID: req.body.uuid,
           name: req.body.name,
           notify: req.body.notifyPref,
           childLock: req.body.childLock,
