@@ -14,7 +14,6 @@ export default function Home() {
   const [time, setTime] = useState(Date.now());
   const [checked, setChecked] = useState(false);
   const [notifyPref, setNotifyPref] = useState(true);
-  const [uuid, setUUID] = useState(null);
 
   const decrement = () => {
     if (stage > 0) {
@@ -39,7 +38,7 @@ export default function Home() {
       {
         method: "POST",
         body: JSON.stringify({
-          uuid: uuid,
+          uuid: crypto.randomBytes(32).toString("hex"),
           name: name,
           time: time,
           childLock: checked,
@@ -51,18 +50,8 @@ export default function Home() {
       }
     )
       .then((res) => res.json())
-      .then((body) => console.log(body));
-
-    createTimer.then((data) => router.push(`/dashboard/${data}`));
+      .then((body) => router.push(`/dashboard/${body.uuid}`));
   }
-
-  const createTimer = new Promise<String>((resolve) => {
-    resolve(crypto.randomBytes(32).toString("hex"));
-  })
-    .then((r) => setUUID(r))
-    .catch((err) => {
-      console.log(err);
-    });
 
   const container = {
     init: { opacity: 0, y: 10 },
@@ -110,8 +99,8 @@ export default function Home() {
             </a>{" "}
             <p>/</p>
             <a
-              className="text-gray-400 font-medium transition-all duration-500 hover:text-opacity-75"
-              href="/create"
+              href={"create"}
+              className="text-gray-400 font-medium transition-all duration-500 hover:text-opacity-7"
             >
               Create
             </a>{" "}

@@ -17,7 +17,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       })
       .catch((err) => console.log(err));
 
-    return res.status(200).json({ success: true });
+    return res.status(200).json({ success: true, uuid: req.body.uuid });
   } else {
     // Method is not POST, return 504 method not allowed
     return res.status(504).json({ success: false, data: "Method not allowed" });

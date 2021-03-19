@@ -1,10 +1,19 @@
 import { useRouter } from "next/router";
+import Head from "next/head";
 
 const Settings = () => {
-	const router = useRouter();
-	const { timer } = router.query;
+  const { query } = useRouter();
+  let timer: string | string[] | undefined;
+  ({ timer } = query);
 
-	return <p>The Timerr settings ID is: {timer}</p>;
+  return (
+    <>
+      <Head>
+        <title>Timerr</title>
+      </Head>
+      <main>The Timerr settings ID is: {timer}</main>
+    </>
+  );
 };
 
 export default Settings;
