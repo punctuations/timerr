@@ -16,7 +16,8 @@ model Timer {
   name      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  timeLeft  Int
+  endsAt    String
+  timeLeft  String
   notify    Boolean
   childLock Boolean
 }

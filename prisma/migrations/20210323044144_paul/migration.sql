@@ -5,7 +5,8 @@ CREATE TABLE "Timer" (
     "name" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "timeLeft" INTEGER NOT NULL,
+    "endsAt" TEXT NOT NULL,
+    "timeLeft" TEXT NOT NULL,
     "notify" BOOLEAN NOT NULL,
     "childLock" BOOLEAN NOT NULL,
 

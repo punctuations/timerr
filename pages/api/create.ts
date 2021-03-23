@@ -1,5 +1,6 @@
 import prisma from "../../lib/db";
 import { NextApiRequest, NextApiResponse } from "next";
+import moment from "moment";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   // Is method POST?
@@ -12,7 +13,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           name: req.body.name,
           notify: req.body.notifyPref,
           childLock: req.body.childLock,
-          timeLeft: 0,
+          endsAt: req.body.time,
+          timeLeft: moment(req.body.time).from(new Date().toUTCString()),
         },
       })
       .catch((err) => console.log(err));

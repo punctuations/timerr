@@ -5,13 +5,14 @@ import { useState, ChangeEvent } from "react";
 import { useKeyPressEvent } from "react-use";
 import { motion } from "framer-motion";
 import { TextField, Checkbox } from "@material-ui/core";
+import moment from "moment";
 
 export default function Home() {
   const router = useRouter();
 
   const [stage, setStage] = useState(0);
   const [name, setName] = useState("My timer");
-  const [time, setTime] = useState(Date.now());
+  const [time, setTime] = useState(null);
   const [checked, setChecked] = useState(false);
   const [notifyPref, setNotifyPref] = useState(true);
 
@@ -227,7 +228,19 @@ export default function Home() {
                       step: 300, // 5 min
                     }}
                     onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                      console.log(e.target.valueAsNumber)
+                      setTime(
+                        moment(
+                          moment(e.target.valueAsNumber)
+                            .year(new Date().getFullYear())
+                            .month(new Date().getMonth())
+                            .day(new Date().getDate())
+                            .hour(moment(e.target.valueAsNumber).hours())
+                            .minute(
+                              moment(e.target.valueAsNumber).minutes() +
+                                new Date().getTimezoneOffset()
+                            )
+                        ).format()
+                      )
                     }
                   />
                 </motion.form>
