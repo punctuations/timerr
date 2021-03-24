@@ -5,6 +5,11 @@ import { useState, ChangeEvent } from "react";
 import { useKeyPressEvent } from "react-use";
 import { motion } from "framer-motion";
 import { TextField, Checkbox } from "@material-ui/core";
+import {
+  KeyboardTimePicker,
+  MuiPickersUtilsProvider,
+} from "@material-ui/pickers";
+import MomentUtils from "@date-io/moment";
 import moment from "moment";
 
 export default function Home() {
@@ -13,8 +18,23 @@ export default function Home() {
   const [stage, setStage] = useState(0);
   const [name, setName] = useState("My timer");
   const [time, setTime] = useState(null);
+  const [previewTime, setPreviewTime] = useState(new Date().toString());
   const [checked, setChecked] = useState(false);
   const [notifyPref, setNotifyPref] = useState(true);
+
+  const handleDateChange = (date) => {
+    // console.log(
+    //   moment(date)
+    //     .minute(moment(date).minutes() + new Date().getTimezoneOffset())
+    //     .format("LTS")
+    // );
+    setPreviewTime(date);
+    setTime(
+      moment(date)
+        // .minute(moment(date).minutes() + new Date().getTimezoneOffset())
+        .format()
+    );
+  };
 
   const decrement = () => {
     if (stage > 0) {
@@ -210,43 +230,16 @@ export default function Home() {
                   When does this timer end?
                 </motion.h3>
 
-                <motion.form
-                  variants={item}
-                  className="flex flex-wrap"
-                  noValidate
-                >
-                  <TextField
-                    id="time"
-                    label="Duration"
-                    type="time"
-                    defaultValue="07:30"
-                    className="w-32"
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                    inputProps={{
-                      step: 300, // 5 min
-                    }}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                      setTime(
-                        moment(
-                          moment(e.target.valueAsNumber)
-                            .year(new Date().getFullYear())
-                            .month(new Date().getMonth())
-                            .day(new Date().getDate())
-                            .hour(moment(e.target.valueAsNumber).hours())
-                            .minute(
-                              moment().utcOffset() > 0
-                                ? moment(e.target.valueAsNumber).minutes() +
-                                    moment().utcOffset()
-                                : moment(e.target.valueAsNumber).minutes() -
-                                    moment().utcOffset()
-                            )
-                        ).format()
-                      )
-                    }
+                <MuiPickersUtilsProvider utils={MomentUtils}>
+                  <KeyboardTimePicker
+                    label="Masked timepicker"
+                    className="w-40"
+                    placeholder="08:00 AM"
+                    mask="__:__ _M"
+                    value={previewTime}
+                    onChange={(date) => handleDateChange(moment(date).format())}
                   />
-                </motion.form>
+                </MuiPickersUtilsProvider>
               </>
             ) : null}
 
