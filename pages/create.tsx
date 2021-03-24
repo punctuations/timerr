@@ -236,8 +236,11 @@ export default function Home() {
                             .day(new Date().getDate())
                             .hour(moment(e.target.valueAsNumber).hours())
                             .minute(
-                              moment(e.target.valueAsNumber).minutes() -
-                                moment().utcOffset()
+                              moment().utcOffset() > 0
+                                ? moment(e.target.valueAsNumber).minutes() +
+                                    moment().utcOffset()
+                                : moment(e.target.valueAsNumber).minutes() -
+                                    moment().utcOffset()
                             )
                         ).format()
                       )
