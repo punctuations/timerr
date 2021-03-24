@@ -236,8 +236,8 @@ export default function Home() {
                             .day(new Date().getDate())
                             .hour(moment(e.target.valueAsNumber).hours())
                             .minute(
-                              moment(e.target.valueAsNumber).minutes() +
-                                new Date().getTimezoneOffset()
+                              moment(e.target.valueAsNumber).minutes() -
+                                moment().utcOffset()
                             )
                         ).format()
                       )
