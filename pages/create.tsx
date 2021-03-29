@@ -23,17 +23,8 @@ export default function Home() {
   const [notifyPref, setNotifyPref] = useState(true);
 
   const handleDateChange = (date) => {
-    // console.log(
-    //   moment(date)
-    //     .minute(moment(date).minutes() + new Date().getTimezoneOffset())
-    //     .format("LTS")
-    // );
     setPreviewTime(date);
-    setTime(
-      moment(date)
-        // .minute(moment(date).minutes() + new Date().getTimezoneOffset())
-        .format()
-    );
+    setTime(date);
   };
 
   const decrement = () => {
