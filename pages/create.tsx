@@ -40,7 +40,9 @@ export default function Home() {
   };
 
   useKeyPressEvent("ArrowLeft", decrement);
+  useKeyPressEvent("Escape", decrement);
   useKeyPressEvent("ArrowRight", increment);
+  useKeyPressEvent("Enter", increment);
 
   function submitTimer() {
     fetch(
