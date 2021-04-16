@@ -33,7 +33,6 @@ export async function getServerSideProps({ params }) {
 
 export default function Settings(props) {
   const router = useRouter();
-  const [boolSwitch, setBoolSwitch] = useBoolean(true);
 
   const [progress, setProgressState] = useState(0);
   const [timeRemaining, setRemaining] = useState(props.timeLeft);
@@ -72,28 +71,24 @@ export default function Settings(props) {
     isRunning ? delay : null
   );
 
-  setBoolSwitch(boolSwitch && Math.trunc(progress) == 100 ? !boolSwitch : null);
-
-  if (boolSwitch) {
-    if (Math.trunc(progress) == 100) {
-      if (!window.Notification) {
-        alert("Timer finished!");
+  if (Math.trunc(progress) == 100) {
+    if (!window.Notification) {
+      alert("Timer finished!");
+    } else {
+      if (Notification.permission === "granted") {
+        new Notification("Timer has finished!");
       } else {
-        if (Notification.permission === "granted") {
-          new Notification("Timer has finished!");
-        } else {
-          Notification.requestPermission()
-            .then((p: NotificationPermission) => {
-              if (p === "granted") {
-                new Notification("Timer has finished!");
-              } else {
-                alert("Timer has finished!");
-              }
-            })
-            .catch((e) => {
-              console.log(e);
-            });
-        }
+        Notification.requestPermission()
+          .then((p: NotificationPermission) => {
+            if (p === "granted") {
+              new Notification("Timer has finished!");
+            } else {
+              alert("Timer has finished!");
+            }
+          })
+          .catch((e) => {
+            console.log(e);
+          });
       }
     }
   }
