@@ -47,8 +47,8 @@ export default function Home() {
   function submitTimer() {
     fetch(
       process.env.NODE_ENV === "development"
-        ? "http://localhost:3000/api/create"
-        : "https://timerr.vercel.app/api/create", // REPLACE WITH YOUR URL
+        ? "http://localhost:3000/api/create" // REPLACE WITH YOUR URL
+        : "https://timerr.vercel.app/api/create",
       {
         method: "POST",
         body: JSON.stringify({
