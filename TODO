@@ -1,3 +1,5 @@
     - Add 404 Page on a non-existent uuid
     - Add Pause / Play capability
+    - fix settings page
+    - make responsive
     - Switch over to supabase [done]
