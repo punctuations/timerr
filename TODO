@@ -2,4 +2,5 @@
     - Add Pause / Play capability
     - fix settings page
     - make responsive
+    - change to to minutes from now instead of date
     - Switch over to supabase [done]
