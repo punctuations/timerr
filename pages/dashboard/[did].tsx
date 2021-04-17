@@ -73,6 +73,7 @@ export default function Dashboard(props) {
   const [isRunning, toggleIsRunning] = useBoolean(true);
 
   const [manual, setManualDelete] = useBoolean(false);
+  const [selectedTimer, setSelectedTimer] = useState(0);
 
   const [success, setSuccess] = useBoolean(false);
 
@@ -124,6 +125,11 @@ export default function Dashboard(props) {
     }
   }
 
+  const manualDeletion = (i) => {
+    setManualDelete(true);
+    setSelectedTimer(i);
+  };
+
   function deleteTimer(i) {
     fetch(
       process.env.NODE_ENV === "development"
@@ -171,7 +177,7 @@ export default function Dashboard(props) {
                 className="h-5 w-5 text-red-500 hover:text-red-400"
                 viewBox="0 0 20 20"
                 fill="currentColor"
-                onClick={() => setManualDelete(true)}
+                onClick={() => manualDeletion(i)}
               >
                 <path
                   fillRule="evenodd"
@@ -245,6 +251,7 @@ export default function Dashboard(props) {
             </motion.p>
           </motion.header>
         </motion.section>
+
         {timers.map((content) => {
           return (
             <motion.section
@@ -257,6 +264,18 @@ export default function Dashboard(props) {
             </motion.section>
           );
         })}
+
+        <motion.button
+          variants={container}
+          initial="init"
+          animate="enter"
+          className="w-1/4 transition-colors duration-300 border-gray-200 hover:border-blue-500 hover:text-blue-500 border p-5 rounded-md flex items-center justify-center shadow-md"
+          onClick={() =>
+            router.push(`/dashboard/${props.prisma[0].dash}/create`)
+          }
+        >
+          Create new &rarr;
+        </motion.button>
 
         <AnimatePresence initial={false}>
           {state || manual ? (
@@ -390,7 +409,7 @@ export default function Dashboard(props) {
                       <button
                         type="button"
                         className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
-                        onClick={() => deleteTimer(0)}
+                        onClick={() => deleteTimer(selectedTimer)}
                       >
                         Delete
                       </button>
