@@ -52,6 +52,7 @@ export default function Home() {
       {
         method: "POST",
         body: JSON.stringify({
+          dashUUID: crypto.randomBytes(32).toString("hex"),
           uuid: crypto.randomBytes(32).toString("hex"),
           name: name,
           time: time,

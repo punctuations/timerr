@@ -1,22 +1,22 @@
-import { useState } from "react";
 import Head from "next/head";
-import moment from "moment";
-import { CircularProgress } from "@material-ui/core";
-import { useBoolean, useInterval } from "react-use";
-import { useRouter } from "next/router";
 import { AnimatePresence, motion } from "framer-motion";
+import { useRouter } from "next/router";
+import { CircularProgress } from "@material-ui/core";
+import { useState } from "react";
+import { useBoolean, useInterval } from "react-use";
+import moment from "moment";
 
 export async function getServerSideProps({ params }) {
-  const { timer } = params;
+  const { did } = params;
 
   const res = await fetch(
     process.env.NODE_ENV === "development"
-      ? "http://localhost:3000/api/read"
-      : "https://timerr.vercel.app/api/read",
+      ? "http://localhost:3000/api/dash"
+      : "https://timerr.vercel.app/api/dash",
     {
       method: "POST",
       body: JSON.stringify({
-        uuid: timer,
+        dashUUID: did,
       }),
       headers: {
         "Content-Type": "Application/Json",
@@ -27,11 +27,42 @@ export async function getServerSideProps({ params }) {
   const body = await res.json();
 
   return {
-    props: body.prisma,
+    props: body,
   };
 }
 
-export default function Settings(props) {
+export default function Dashboard(props) {
+  const container = {
+    init: { opacity: 0, y: 10 },
+    enter: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5,
+        ease: [0.48, 0.15, 0.25, 0.96],
+        staggerChildren: 0.45,
+      },
+    },
+  };
+
+  const subContainer = {
+    init: { opacity: 0, y: 5 },
+    enter: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5,
+        ease: [0.48, 0.15, 0.25, 0.96],
+        staggerChildren: 0.5,
+      },
+    },
+  };
+
+  const item = {
+    init: { opacity: 0, y: 5 },
+    enter: { opacity: 1, y: 0 },
+  };
+
   const router = useRouter();
 
   const [progress, setProgressState] = useState(0);
@@ -93,7 +124,7 @@ export default function Settings(props) {
     }
   }
 
-  function deleteTimer() {
+  function deleteTimer(i) {
     fetch(
       process.env.NODE_ENV === "development"
         ? "http://localhost:3000/api/delete" // REPLACE WITH YOUR URL
@@ -101,7 +132,7 @@ export default function Settings(props) {
       {
         method: "POST",
         body: JSON.stringify({
-          uuid: props.timerUUID,
+          uuid: props.prisma[i].timerUUID,
         }),
         headers: {
           "Content-Type": "application/json",
@@ -113,21 +144,18 @@ export default function Settings(props) {
       .then(() => router.push("/"));
   }
 
-  return (
-    <>
-      <Head>
-        <title>Timerr</title>
-      </Head>
-      <p className="absolute top-3 left-3 2xl:text-base xl:text-base lg:text-base md:text-sm sm:text-xs text-xs">
-        {props.timerUUID}
-      </p>
-      <main className="absolute w-full h-full flex flex-col justify-center items-center">
-        <section className="w-1/4 rounded-lg shadow-lg border border-gray-300">
+  const timers = [];
+
+  for (const i in props.prisma) {
+    if (props.prisma.hasOwnProperty(i)) {
+      timers.push(
+        <>
           <section className="flex flex-row justify-between px-5 p-4 pb-2">
             <header className="flex flex-col">
-              <h1 className="text-3xl font-bold">{props.name}</h1>
+              <h1 className="text-3xl font-bold">{props.prisma[i].name}</h1>
               <p className="text-sm">
-                Created on: {new Date(props.createdAt).toLocaleDateString()}
+                Created on:{" "}
+                {new Date(props.prisma[i].createdAt).toLocaleDateString()}
               </p>
             </header>
             <section className="flex flex-row space-x-3 justify-center items-center">
@@ -154,7 +182,7 @@ export default function Settings(props) {
             </section>
           </section>
           <section className="flex flex-row justify-around border-t border-gray-100 p-4 pt-2">
-            {!props.childLock ? (
+            {!props.prisma[i].childLock ? (
               <div className="inline-flex items-center justify-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -184,7 +212,52 @@ export default function Settings(props) {
               </div>
             ) : null}
           </section>
-        </section>
+        </>
+      );
+    }
+  }
+
+  return (
+    <>
+      <Head>
+        <title>Timerr</title>
+      </Head>
+      <p className="absolute top-3 left-3 2xl:text-base xl:text-base lg:text-base md:text-sm sm:text-xs text-xs">
+        {props.prisma[0].dash}
+      </p>
+      <main className="absolute w-full h-full flex flex-col justify-center items-center space-y-6">
+        <motion.section
+          className="flex flex-col justify-center items-center space-y-10"
+          variants={container}
+          initial="init"
+          animate="enter"
+        >
+          <motion.header
+            variants={subContainer}
+            className="flex flex-col items-center"
+          >
+            <motion.h1 variants={item} className="text-6xl font-semibold">
+              Dashboard
+            </motion.h1>
+            <motion.p variants={item}>
+              Your timer has just been created, where would you like to go from
+              here?
+            </motion.p>
+          </motion.header>
+        </motion.section>
+        {timers.map((content) => {
+          return (
+            <motion.section
+              variants={container}
+              initial="init"
+              animate="enter"
+              className="w-1/4 rounded-lg shadow-lg border border-gray-300"
+            >
+              {content}
+            </motion.section>
+          );
+        })}
+
         <AnimatePresence initial={false}>
           {state || manual ? (
             <motion.div

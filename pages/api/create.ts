@@ -9,6 +9,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     await prisma.timer
       .create({
         data: {
+          dash: req.body.dashUUID,
           timerUUID: req.body.uuid,
           name: req.body.name,
           notify: req.body.notifyPref,
@@ -19,7 +20,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       })
       .catch((err) => console.log(err));
 
-    return res.status(200).json({ success: true, uuid: req.body.uuid });
+    return res.status(200).json({ success: true, uuid: req.body.dashUUID });
   } else {
     // Method is not POST, return 504 method not allowed
     return res.status(504).json({ success: false, data: "Method not allowed" });
