@@ -12,7 +12,7 @@ generator client {
 
 model Timer {
   id        Int      @id @default(autoincrement())
-  dash      String   @unique
+  dash      String
   timerUUID String   @unique
   name      String
   createdAt DateTime @default(now())
