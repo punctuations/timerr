@@ -2,7 +2,7 @@ import Head from "next/head";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
 import React from "react";
-import Timer from "../../lib/components/timer";
+import Timer from "../../components/timer";
 
 export async function getServerSideProps({ params }) {
   const { did } = params;
