@@ -22,6 +22,8 @@ export default function Home() {
   const [checked, setChecked] = useState(false);
   const [notifyPref, setNotifyPref] = useState(true);
 
+  const [submitted, setSubmitted] = useState(false);
+
   const handleDateChange = (date) => {
     setPreviewTime(date);
     setTime(date);
@@ -45,6 +47,8 @@ export default function Home() {
   useKeyPressEvent("Enter", increment);
 
   function submitTimer() {
+    setSubmitted(true);
+
     fetch(
       process.env.NODE_ENV === "development"
         ? "http://localhost:3000/api/create" // REPLACE WITH YOUR URL
@@ -279,6 +283,7 @@ export default function Home() {
               onClick={() => {
                 submitTimer();
               }}
+              disabled={submitted}
               className="focus:outline-none transition-colors duration-300 border-gray-200 hover:border-blue-500 hover:text-blue-500 border p-3 rounded-md"
             >
               Done &rarr;

@@ -26,12 +26,33 @@ export async function getServerSideProps({ params }) {
 
   const body = await res.json();
 
-  return {
-    props: body.prisma,
-  };
+  console.log(body);
+
+  if (body.prisma === null) {
+    return {
+      props: { prisma: { error: true } },
+    };
+  } else {
+    return {
+      props: body.prisma,
+    };
+  }
 }
 
 export default function Timer(props) {
+  const container = {
+    init: { opacity: 0, y: 10 },
+    enter: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5,
+        ease: [0.48, 0.15, 0.25, 0.96],
+        staggerChildren: 0.45,
+      },
+    },
+  };
+
   const router = useRouter();
 
   const [progress, setProgressState] = useState(0);
@@ -116,216 +137,245 @@ export default function Timer(props) {
       <Head>
         <title>Timerr</title>
       </Head>
-      <p className="absolute top-3 left-3 2xl:text-base xl:text-base lg:text-base md:text-sm sm:text-xs text-xs">
-        {props.timerUUID}
-      </p>
-      <main className="absolute w-full h-full flex justify-center items-center">
-        <section className="relative flex flex-col space-y-6 justify-center items-center border border-gray-300 p-4 rounded-lg shadow-lg">
-          {Math.trunc(progress) === 100 ? (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="absolute -top-2 -left-2 h-5 w-5 text-blue-600"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              onClick={() => setState(true)}
-            >
-              <path
-                fillRule="evenodd"
-                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                clipRule="evenodd"
-              />
-            </svg>
-          ) : null}
-          <AnimatePresence initial={false}>
-            {state ? (
-              <motion.div
-                className="fixed z-10 inset-0 overflow-y-auto"
-                aria-labelledby="modal-title"
-                role="dialog"
-                aria-modal="true"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
+
+      {props.prisma?.error ? (
+        <main className="absolute w-full h-full grid place-content-center">
+          <motion.section
+            variants={container}
+            initial="init"
+            animate="enter"
+            className="rounded-lg shadow-xl px-7 py-3 flex flex-row space-x-10 items-center justify-center"
+          >
+            <h1 className="text-5xl">😔</h1>
+            <div className="flex flex-col space-y-3">
+              <h3 className="text-3xl">Uh oh!</h3>
+              <p>
+                Looks like the timer you tried to reach doesn't exist or has
+                been deleted!
+              </p>
+              <button
+                onClick={() => router.push("/create")}
+                className="self-center justify-self-center rounded-lg border duration-500 transition-colors border-gray-200 hover:border-blue-500 hover:text-blue-500 px-4 py-2 w-1/3"
               >
-                <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                  {/*Background overlay, show/hide based on modal state.*/}
-
-                  {/*Entering: "ease-out duration-300"*/}
-                  {/*  From: "opacity-0"*/}
-                  {/*  To: "opacity-100"*/}
-                  {/*Leaving: "ease-in duration-200"*/}
-                  {/*  From: "opacity-100"*/}
-                  {/*  To: "opacity-0"*/}
-
-                  <div
-                    className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
-                    aria-hidden="true"
+                Create one &rarr;
+              </button>
+            </div>
+          </motion.section>
+        </main>
+      ) : (
+        <>
+          <p className="absolute top-3 left-3 2xl:text-base xl:text-base lg:text-base md:text-sm sm:text-xs text-xs">
+            {props.timerUUID}
+          </p>
+          <main className="absolute w-full h-full flex justify-center items-center">
+            <section className="relative flex flex-col space-y-6 justify-center items-center border border-gray-300 p-4 rounded-lg shadow-lg">
+              {Math.trunc(progress) === 100 ? (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="absolute -top-2 -left-2 h-5 w-5 text-blue-600"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  onClick={() => setState(true)}
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                    clipRule="evenodd"
                   />
-
-                  <span
-                    className="hidden sm:inline-block sm:align-middle sm:h-screen"
-                    aria-hidden="true"
+                </svg>
+              ) : null}
+              <AnimatePresence initial={false}>
+                {state ? (
+                  <motion.div
+                    className="fixed z-10 inset-0 overflow-y-auto"
+                    aria-labelledby="modal-title"
+                    role="dialog"
+                    aria-modal="true"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
                   >
-                    &#8203;
-                  </span>
+                    <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                      {/*Background overlay, show/hide based on modal state.*/}
 
-                  {/*Entering: "ease-out duration-300"*/}
-                  {/*  From: "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"*/}
-                  {/*  To: "opacity-100 translate-y-0 sm:scale-100"*/}
-                  {/*Leaving: "ease-in duration-200"*/}
-                  {/*  From: "opacity-100 translate-y-0 sm:scale-100"*/}
-                  {/*  To: "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"*/}
+                      {/*Entering: "ease-out duration-300"*/}
+                      {/*  From: "opacity-0"*/}
+                      {/*  To: "opacity-100"*/}
+                      {/*Leaving: "ease-in duration-200"*/}
+                      {/*  From: "opacity-100"*/}
+                      {/*  To: "opacity-0"*/}
 
-                  <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                    <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                      <div className="sm:flex sm:items-start">
-                        <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                          {/* Heroicon name: outline/exclamation */}
+                      <div
+                        className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+                        aria-hidden="true"
+                      />
 
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-6 w-6 text-red-600"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                            aria-hidden="true"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={1.5}
-                              d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                            />
-                          </svg>
-                        </div>
-                        <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                          <h3
-                            className="text-lg leading-6 font-medium text-gray-900"
-                            id="modal-title"
-                          >
-                            Timer has finished!
-                          </h3>
-                          <div className="mt-2">
-                            <p className="text-sm text-gray-500">
-                              This timer has finished and is no-longer being
-                              used would you like to delete it? This action
-                              cannot be undone and is permanent.
-                            </p>
+                      <span
+                        className="hidden sm:inline-block sm:align-middle sm:h-screen"
+                        aria-hidden="true"
+                      >
+                        &#8203;
+                      </span>
+
+                      {/*Entering: "ease-out duration-300"*/}
+                      {/*  From: "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"*/}
+                      {/*  To: "opacity-100 translate-y-0 sm:scale-100"*/}
+                      {/*Leaving: "ease-in duration-200"*/}
+                      {/*  From: "opacity-100 translate-y-0 sm:scale-100"*/}
+                      {/*  To: "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"*/}
+
+                      <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                        <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                          <div className="sm:flex sm:items-start">
+                            <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                              {/* Heroicon name: outline/exclamation */}
+
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-6 w-6 text-red-600"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                aria-hidden="true"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={1.5}
+                                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                                />
+                              </svg>
+                            </div>
+                            <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                              <h3
+                                className="text-lg leading-6 font-medium text-gray-900"
+                                id="modal-title"
+                              >
+                                Timer has finished!
+                              </h3>
+                              <div className="mt-2">
+                                <p className="text-sm text-gray-500">
+                                  This timer has finished and is no-longer being
+                                  used would you like to delete it? This action
+                                  cannot be undone and is permanent.
+                                </p>
+                              </div>
+                            </div>
                           </div>
+                        </div>
+                        <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                          {success ? (
+                            <button
+                              type="button"
+                              disabled
+                              className="inline-flex w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-400 text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-300 sm:ml-3 sm:w-auto sm:text-sm"
+                            >
+                              <svg
+                                className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                              >
+                                <circle
+                                  className="opacity-25"
+                                  cx="12"
+                                  cy="12"
+                                  r="10"
+                                  stroke="currentColor"
+                                  strokeWidth="4"
+                                />
+                                <path
+                                  className="opacity-75"
+                                  fill="currentColor"
+                                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                />
+                              </svg>{" "}
+                              Deleting...
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
+                              onClick={() => deleteTimer()}
+                            >
+                              Delete
+                            </button>
+                          )}
+
+                          {success ? (
+                            <button
+                              type="button"
+                              disabled
+                              className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-200 shadow-sm px-4 py-2 bg-gray-100 text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                            >
+                              Cancel
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                              onClick={() => setState(false)}
+                            >
+                              Cancel
+                            </button>
+                          )}
                         </div>
                       </div>
                     </div>
-                    <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                      {success ? (
-                        <button
-                          type="button"
-                          disabled
-                          className="inline-flex w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-400 text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-300 sm:ml-3 sm:w-auto sm:text-sm"
-                        >
-                          <svg
-                            className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                          >
-                            <circle
-                              className="opacity-25"
-                              cx="12"
-                              cy="12"
-                              r="10"
-                              stroke="currentColor"
-                              strokeWidth="4"
-                            />
-                            <path
-                              className="opacity-75"
-                              fill="currentColor"
-                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                            />
-                          </svg>{" "}
-                          Deleting...
-                        </button>
-                      ) : (
-                        <button
-                          type="button"
-                          className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
-                          onClick={() => deleteTimer()}
-                        >
-                          Delete
-                        </button>
-                      )}
+                  </motion.div>
+                ) : null}
+              </AnimatePresence>
 
-                      {success ? (
-                        <button
-                          type="button"
-                          disabled
-                          className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-200 shadow-sm px-4 py-2 bg-gray-100 text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                        >
-                          Cancel
-                        </button>
-                      ) : (
-                        <button
-                          type="button"
-                          className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                          onClick={() => setState(false)}
-                        >
-                          Cancel
-                        </button>
-                      )}
-                    </div>
+              <header className="flex flex-col items-center justify-center px-14">
+                <h1 className="text-3xl font-bold">{props.name}</h1>
+                <p className="text-sm">
+                  Created on: {new Date(props.createdAt).toLocaleDateString()}
+                </p>
+              </header>
+              <section className="flex flex-col space-y-3 justify-center items-center px-14">
+                <CircularProgress
+                  variant="determinate"
+                  value={Math.trunc(progress)}
+                />
+                <p>
+                  {timeRemaining} - {Math.trunc(progress)}%
+                </p>
+              </section>
+              <section className="flex flex-row justify-around border-t border-gray-100 pt-2 px-14">
+                {!props.childLock ? (
+                  <div className="inline-flex items-center justify-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z"
+                        clipRule="evenodd"
+                      />
+                    </svg>{" "}
+                    /{" "}
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                        clipRule="evenodd"
+                      />
+                    </svg>{" "}
                   </div>
-                </div>
-              </motion.div>
-            ) : null}
-          </AnimatePresence>
-
-          <header className="flex flex-col items-center justify-center px-14">
-            <h1 className="text-3xl font-bold">{props.name}</h1>
-            <p className="text-sm">
-              Created on: {new Date(props.createdAt).toLocaleDateString()}
-            </p>
-          </header>
-          <section className="flex flex-col space-y-3 justify-center items-center px-14">
-            <CircularProgress
-              variant="determinate"
-              value={Math.trunc(progress)}
-            />
-            <p>
-              {timeRemaining} - {Math.trunc(progress)}%
-            </p>
-          </section>
-          <section className="flex flex-row justify-around border-t border-gray-100 pt-2 px-14">
-            {!props.childLock ? (
-              <div className="inline-flex items-center justify-center">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z"
-                    clipRule="evenodd"
-                  />
-                </svg>{" "}
-                /{" "}
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
-                    clipRule="evenodd"
-                  />
-                </svg>{" "}
-              </div>
-            ) : null}
-          </section>
-        </section>
-      </main>
+                ) : null}
+              </section>
+            </section>
+          </main>
+        </>
+      )}
     </>
   );
 }

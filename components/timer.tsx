@@ -73,7 +73,7 @@ const Timer = (props: {
           <button onClick={() => router.push(`/id/${props.timer.timerUUID}`)}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 text-gray-500 hover:text-gray-400"
+              className="focus:outline-none h-5 w-5 text-gray-500 hover:text-gray-400"
               viewBox="0 0 20 20"
               fill="currentColor"
             >
@@ -85,7 +85,7 @@ const Timer = (props: {
           <button onClick={() => setDeleteState(true)}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 text-red-500 hover:text-red-600 cursor-pointer"
+              className="focus:outline-none h-5 w-5 text-red-500 hover:text-red-600"
               viewBox="0 0 20 20"
               fill="currentColor"
             >
