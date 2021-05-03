@@ -1,8 +1,13 @@
+import React from "react";
+
 import { AnimatePresence, motion } from "framer-motion";
 import { useBoolean } from "react-use";
 
-const Delete = (props: { state: boolean; selectedTimer: string }) => {
-  const [manual, setManualDelete] = useBoolean(true);
+const Delete = (props: {
+  state: boolean;
+  setDeleteState: React.Dispatch<React.SetStateAction<boolean>>;
+  selectedTimer: string;
+}) => {
   const [success, setSuccess] = useBoolean(false);
 
   function deleteTimer() {
@@ -27,7 +32,7 @@ const Delete = (props: { state: boolean; selectedTimer: string }) => {
 
   return (
     <AnimatePresence initial={false}>
-      {props.state && manual ? (
+      {props.state ? (
         <motion.div
           className="fixed z-10 inset-0 overflow-y-auto"
           aria-labelledby="modal-title"
@@ -137,7 +142,7 @@ const Delete = (props: { state: boolean; selectedTimer: string }) => {
                   <button
                     type="button"
                     className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                    onClick={() => setManualDelete(false)}
+                    onClick={() => props.setDeleteState(false)}
                   >
                     Cancel
                   </button>

@@ -1,7 +1,7 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import Head from "next/head";
 import moment from "moment";
-import { CircularProgress } from "@material-ui/core";
+import { CircularProgress, CircularProgressLabel } from "@chakra-ui/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useBoolean, useInterval } from "react-use";
 import { useRouter } from "next/router";
@@ -333,13 +333,12 @@ export default function Timer(props) {
                 </p>
               </header>
               <section className="flex flex-col space-y-3 justify-center items-center px-14">
-                <CircularProgress
-                  variant="determinate"
-                  value={Math.trunc(progress)}
-                />
-                <p>
-                  {timeRemaining} - {Math.trunc(progress)}%
-                </p>
+                <CircularProgress value={Math.trunc(progress)} thickness={7}>
+                  <CircularProgressLabel>
+                    {Math.trunc(progress)}%
+                  </CircularProgressLabel>
+                </CircularProgress>
+                <p>{timeRemaining}</p>
               </section>
               <section className="flex flex-row justify-around border-t border-gray-100 pt-2 px-14">
                 {!props.childLock ? (

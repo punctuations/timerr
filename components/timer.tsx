@@ -1,6 +1,6 @@
 import React from "react";
 import moment from "moment";
-import { CircularProgress } from "@material-ui/core";
+import { CircularProgress, CircularProgressLabel } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useInterval } from "react-use";
 import Delete from "./delete";
@@ -26,6 +26,8 @@ const Timer = (props: {
   const [isRunning, setIsRunning] = React.useState(true);
 
   const [deleteState, setDeleteState] = React.useState(false);
+
+  console.log(deleteState);
 
   useInterval(
     () => {
@@ -63,17 +65,19 @@ const Timer = (props: {
           </p>
         </header>
         <section className="flex flex-row space-x-3 justify-center items-center">
-          <p>
-            {remaining} - {Math.trunc(progress)}%
-          </p>
-          <CircularProgress
-            variant="determinate"
-            value={Math.trunc(progress)}
-          />
-          <button onClick={() => router.push(`/id/${props.timer.timerUUID}`)}>
+          <p>{remaining}</p>
+          <CircularProgress value={Math.trunc(progress)} thickness={7}>
+            <CircularProgressLabel>
+              {Math.trunc(progress)}%
+            </CircularProgressLabel>
+          </CircularProgress>
+          <button
+            className="focus:outline-none"
+            onClick={() => router.push(`/id/${props.timer.timerUUID}`)}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="focus:outline-none h-5 w-5 text-gray-500 hover:text-gray-400"
+              className="h-5 w-5 text-gray-500 hover:text-gray-400"
               viewBox="0 0 20 20"
               fill="currentColor"
             >
@@ -82,10 +86,13 @@ const Timer = (props: {
             </svg>
           </button>
 
-          <button onClick={() => setDeleteState(true)}>
+          <button
+            className="focus:outline-none"
+            onClick={() => setDeleteState(true)}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="focus:outline-none h-5 w-5 text-red-500 hover:text-red-600"
+              className="h-5 w-5 text-red-500 hover:text-red-600"
               viewBox="0 0 20 20"
               fill="currentColor"
             >
@@ -130,7 +137,11 @@ const Timer = (props: {
         ) : null}
       </section>
 
-      <Delete state={deleteState} selectedTimer={props.timer.timerUUID} />
+      <Delete
+        state={deleteState}
+        setDeleteState={setDeleteState}
+        selectedTimer={props.timer.timerUUID}
+      />
     </>
   );
 };
