@@ -26,8 +26,6 @@ export async function getServerSideProps({ params }) {
 
   const body = await res.json();
 
-  console.log(body);
-
   if (body.prisma === null) {
     return {
       props: { prisma: { error: true } },
@@ -90,6 +88,7 @@ export default function Timer(props) {
     isRunning ? delay : null
   );
 
+  // fix this
   if (Math.trunc(progress) == 100) {
     if (!window.Notification) {
       alert("Timer finished!");
