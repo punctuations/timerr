@@ -86,7 +86,7 @@ export default function Dashboard(props) {
               </p>
               <button
                 onClick={() => router.push("/create")}
-                className="self-center justify-self-center rounded-lg border duration-500 transition-colors border-gray-200 hover:border-blue-500 hover:text-blue-500 px-4 py-2 w-1/3"
+                className="self-center justify-self-center rounded-lg border duration-500 transition-colors border-gray-200 hover:border-blue-500 hover:text-blue-500 px-4 py-2 2xl:w-1/3 xl:w-1/3 lg:w-1/3 md:w-1/3 w-1/2"
               >
                 Create one &rarr;
               </button>
@@ -126,7 +126,7 @@ export default function Dashboard(props) {
                   variants={container}
                   initial="init"
                   animate="enter"
-                  className="w-1/3 rounded-lg shadow-lg border border-gray-300"
+                  className="2xl:w-1/3 xl:w-1/3 lg:w-1/2 md:w-1/2 sm:w-2/3 w-5/6 rounded-lg shadow-lg border border-gray-300"
                 >
                   <Timer timer={timer} />
                 </motion.section>
@@ -137,7 +137,7 @@ export default function Dashboard(props) {
               variants={container}
               initial="init"
               animate="enter"
-              className="w-1/4 transition-colors duration-300 border-gray-200 hover:border-blue-500 hover:text-blue-500 border p-5 rounded-md flex items-center justify-center shadow-md focus:outline-none"
+              className="2xl:w-1/4 xl:w-1/4 lg:w-1/3 md:w-1/3 w-1/2 transition-colors duration-300 border-gray-200 hover:border-blue-500 hover:text-blue-500 border p-5 rounded-md flex items-center justify-center shadow-md focus:outline-none"
               onClick={() => router.push(`/${props.prisma[0].dash}/create`)}
             >
               Create new &rarr;

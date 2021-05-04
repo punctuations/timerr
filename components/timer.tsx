@@ -23,11 +23,9 @@ const Timer = (props: {
   const [delay] = React.useState(1000);
   const [remaining, setRemaining] = React.useState("");
   const [progress, setProgress] = React.useState(0);
-  const [isRunning, setIsRunning] = React.useState(true);
+  const [isRunning] = React.useState(true);
 
   const [deleteState, setDeleteState] = React.useState(false);
-
-  console.log(deleteState);
 
   useInterval(
     () => {
@@ -77,7 +75,7 @@ const Timer = (props: {
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 text-gray-500 hover:text-gray-400"
+              className="h-5 w-5 text-gray-500 duration-200 transition-colors hover:text-gray-400"
               viewBox="0 0 20 20"
               fill="currentColor"
             >
@@ -92,7 +90,7 @@ const Timer = (props: {
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 text-red-500 hover:text-red-600"
+              className="h-5 w-5 text-red-500 duration-200 transition-colors hover:text-red-600"
               viewBox="0 0 20 20"
               fill="currentColor"
             >
