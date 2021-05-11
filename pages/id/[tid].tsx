@@ -62,6 +62,8 @@ export default function Timer(props) {
 
   const [success, setSuccess] = useBoolean(false);
 
+  const [notified, setNotified] = useState(false);
+
   useInterval(
     () => {
       setRemaining(moment(props.endsAt).from(new Date().toUTCString()));
@@ -88,8 +90,8 @@ export default function Timer(props) {
     isRunning ? delay : null
   );
 
-  // fix this
-  if (Math.trunc(progress) == 100) {
+  if (Math.trunc(progress) == 100 && !notified && props.notify) {
+    setNotified(true);
     if (!window.Notification) {
       alert("Timer finished!");
     } else {
