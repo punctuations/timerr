@@ -1,32 +1,49 @@
 import Head from "next/head";
 import { useRouter } from "next/router";
 import * as crypto from "crypto";
-import { useState, ChangeEvent } from "react";
+import { useState, ChangeEvent, useRef, useEffect } from "react";
 import { useKeyPressEvent } from "react-use";
 import { motion } from "framer-motion";
-import { TextField, Checkbox } from "@material-ui/core";
-import {
-  KeyboardTimePicker,
-  MuiPickersUtilsProvider,
-} from "@material-ui/pickers";
-import MomentUtils from "@date-io/moment";
-import moment from "moment";
+import { TextField, Checkbox, Select, MenuItem } from "@material-ui/core";
+import NumberFormat from "react-number-format";
+
+import moment, { DurationInputArg1, DurationInputArg2 } from "moment";
 
 export default function CreateNew() {
   const router = useRouter();
+  const timeRef = useRef(null);
+  const unitsRef = useRef(null);
 
   const { dash } = router.query;
 
-  const [stage, setStage] = useState(0);
-  const [name, setName] = useState("My timer");
-  const [time, setTime] = useState(null);
-  const [previewTime, setPreviewTime] = useState(new Date().toString());
-  const [checked, setChecked] = useState(false);
-  const [notifyPref, setNotifyPref] = useState(true);
+  const [stage, setStage] = useState<number>(0);
+  const [name, setName] = useState<string>("My timer");
+  const [time, setTime] = useState<null | string>(null);
+  const [previewTime, setPreviewTime] = useState<string>("Minutes");
+  const [checked, setChecked] = useState<boolean>(false);
+  const [notifyPref, setNotifyPref] = useState<boolean>(true);
 
-  const handleDateChange = (date) => {
-    setPreviewTime(date);
-    setTime(date);
+  const [submitted, setSubmitted] = useState<boolean>(false);
+
+  useEffect(() => {
+    handleDateChange(timeRef?.current?.value, unitsRef?.current?.value);
+  }, [timeRef, unitsRef]);
+
+  const handleDateChange = (time?: number | null, units?: String | null) => {
+    if (time && units) {
+      setTime(
+        moment(
+          moment().add(
+            time as DurationInputArg1,
+            units.toLowerCase() as DurationInputArg2
+          )
+        ).format()
+      );
+    } else if (time && !units) {
+      setTime(moment(moment().add(time, "minutes")).format());
+    } else {
+      setTime(moment(moment().add(5, "minutes")).format());
+    }
   };
 
   const decrement = () => {
@@ -226,16 +243,37 @@ export default function CreateNew() {
                   When does this timer end?
                 </motion.h3>
 
-                <MuiPickersUtilsProvider utils={MomentUtils}>
-                  <KeyboardTimePicker
-                    label="Masked timepicker"
-                    className="w-40"
-                    placeholder="08:00 AM"
-                    mask="__:__ _M"
-                    value={previewTime}
-                    onChange={(date) => handleDateChange(moment(date).format())}
+                <div className="w-40">
+                  <NumberFormat
+                    className="w-10"
+                    customInput={TextField}
+                    format="###"
+                    ref={timeRef}
+                    onChange={(date: ChangeEvent<HTMLInputElement>) =>
+                      handleDateChange(parseInt(date.target.value))
+                    }
                   />
-                </MuiPickersUtilsProvider>
+                  <Select
+                    className="w-30"
+                    value={previewTime}
+                    ref={unitsRef}
+                    onChange={(e: ChangeEvent<{ value: unknown }>) =>
+                      setPreviewTime(e.target.value as string)
+                    }
+                  >
+                    <MenuItem value={10}>Seconds</MenuItem>
+                    <MenuItem value={20}>Minutes</MenuItem>
+                    <MenuItem value={30}>Hours</MenuItem>
+                  </Select>
+                  {/*<KeyboardTimePicker*/}
+                  {/*  label="Masked timepicker"*/}
+                  {/*  className="w-40"*/}
+                  {/*  placeholder="08:00 AM"*/}
+                  {/*  mask="__:__ _M"*/}
+                  {/*  value={previewTime}*/}
+                  {/*  onChange={(date) => handleDateChange(moment(date).format())}*/}
+                  {/*/>*/}
+                </div>
               </>
             ) : null}
 
