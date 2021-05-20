@@ -319,7 +319,8 @@ export default function CreateNew() {
               onClick={() => {
                 submitTimer();
               }}
-              className="focus:outline-none transition-colors duration-300 border-gray-200 hover:border-blue-500 hover:text-blue-500 border p-3 rounded-md"
+              disabled={submitted}
+              className="focus:outline-none transition-colors duration-300 border-gray-200 hover:border-blue-500 hover:text-blue-500 disabled:text-gray-300 border p-3 rounded-md"
             >
               Done &rarr;
             </motion.button>
