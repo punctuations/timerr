@@ -265,14 +265,6 @@ export default function CreateNew() {
                     <MenuItem value={20}>Minutes</MenuItem>
                     <MenuItem value={30}>Hours</MenuItem>
                   </Select>
-                  {/*<KeyboardTimePicker*/}
-                  {/*  label="Masked timepicker"*/}
-                  {/*  className="w-40"*/}
-                  {/*  placeholder="08:00 AM"*/}
-                  {/*  mask="__:__ _M"*/}
-                  {/*  value={previewTime}*/}
-                  {/*  onChange={(date) => handleDateChange(moment(date).format())}*/}
-                  {/*/>*/}
                 </div>
               </>
             ) : null}
@@ -315,15 +307,25 @@ export default function CreateNew() {
           </motion.section>
 
           {stage >= 3 ? (
-            <motion.button
-              onClick={() => {
-                submitTimer();
-              }}
-              disabled={submitted}
-              className="focus:outline-none transition-colors duration-300 border-gray-200 hover:border-blue-500 hover:text-blue-500 disabled:text-gray-300 border p-3 rounded-md"
-            >
-              Done &rarr;
-            </motion.button>
+            <>
+              {submitted ? (
+                <motion.button
+                  disabled
+                  className="cursor-not-allowed focus:outline-none transition-colors duration-300 border-gray-200 text-gray-400 border p-3 rounded-md"
+                >
+                  Done &rarr;
+                </motion.button>
+              ) : (
+                <motion.button
+                  onClick={() => {
+                    submitTimer();
+                  }}
+                  className="focus:outline-none transition-colors duration-300 border-gray-200 hover:border-blue-500 hover:text-blue-500 disabled:text-gray-300 border p-3 rounded-md"
+                >
+                  Done &rarr;
+                </motion.button>
+              )}
+            </>
           ) : (
             <motion.button
               className="focus:outline-none transition-colors duration-300 border-gray-200 hover:border-blue-500 hover:text-blue-500 border p-3 rounded-md"
