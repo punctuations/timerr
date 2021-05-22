@@ -194,7 +194,7 @@ export default function Timer(props) {
               </p>
               <button
                 onClick={() => router.push("/create")}
-                className="self-center justify-self-center rounded-lg border duration-500 transition-colors border-gray-200 hover:border-blue-500 hover:text-blue-500 px-4 py-2 w-1/3"
+                className="focus:outline-none self-center justify-self-center rounded-lg border duration-500 transition-colors border-gray-200 hover:border-blue-500 hover:text-blue-500 px-4 py-2 2xl:w-1/3 xl:w-1/3 lg:w-1/3 md:w-1/3 w-2/3"
               >
                 Create one &rarr;
               </button>
