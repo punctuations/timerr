@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Head from "next/head";
 import moment from "moment";
 import { CircularProgress, CircularProgressLabel } from "@chakra-ui/react";
@@ -64,25 +64,43 @@ export default function Timer(props) {
 
   const [notified, setNotified] = useState(false);
 
+  const [isPaused, setIsPaused] = useState<boolean>(props.paused);
+
+  useEffect(() => {
+    setRemaining(moment(props.endsAt).from(new Date().toUTCString()));
+    setProgressState(
+      moment().unix() > moment(props.endsAt).unix()
+        ? 100
+        : 100 -
+            (Math.abs(moment().unix() - moment(props.endsAt).unix()) /
+              (Math.abs(moment().unix() - moment(props.endsAt).unix()) +
+                moment().unix() -
+                moment(props.createdAt).unix())) *
+              100
+    );
+  }, []);
+
   useInterval(
     () => {
-      setRemaining(moment(props.endsAt).from(new Date().toUTCString()));
+      if (!props.paused) {
+        setRemaining(moment(props.endsAt).from(new Date().toUTCString()));
 
-      const currentTime = moment().unix();
+        const currentTime = moment().unix();
 
-      const endingTime = moment(props.endsAt).unix();
-      const creationTime = moment(props.createdAt).unix();
+        const endingTime = moment(props.endsAt).unix();
+        const creationTime = moment(props.updatedAt).unix();
 
-      setProgressState(
-        moment().unix() > moment(props.endsAt).unix()
-          ? 100
-          : 100 -
-              (Math.abs(currentTime - endingTime) /
-                (Math.abs(currentTime - endingTime) +
-                  currentTime -
-                  creationTime)) *
-                100
-      );
+        setProgressState(
+          moment().unix() > moment(props.endsAt).unix()
+            ? 100
+            : 100 -
+                (Math.abs(currentTime - endingTime) /
+                  (Math.abs(currentTime - endingTime) +
+                    currentTime -
+                    creationTime)) *
+                  100
+        );
+      }
 
       toggleIsRunning(Math.trunc(progress) !== 100);
       setState(Math.trunc(progress) === 100);
@@ -131,6 +149,26 @@ export default function Timer(props) {
       .then((res) => res.json())
       .then((r) => setSuccess(r.success))
       .then(() => router.push("/"));
+  }
+
+  function togglePause() {
+    setIsPaused(!isPaused);
+
+    fetch(
+      process.env.NODE_ENV === "development"
+        ? "http://localhost:3000/api/pause" // REPLACE WITH YOUR URL
+        : "https://timerr.vercel.app/api/pause",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          uuid: props.timerUUID,
+          pausedState: !props.paused,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
   }
 
   return (
@@ -343,33 +381,56 @@ export default function Timer(props) {
               </section>
               <section className="flex flex-row justify-around border-t border-gray-100 pt-2 px-14">
                 {!props.childLock ? (
-                  <div className="inline-flex items-center justify-center">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z"
-                        clipRule="evenodd"
-                      />
-                    </svg>{" "}
-                    /{" "}
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
-                        clipRule="evenodd"
-                      />
-                    </svg>{" "}
-                  </div>
+                  <>
+                    {isPaused ? (
+                      <button
+                        className="focus:outline-none inline-flex items-center justify-center"
+                        onClick={() => togglePause()}
+                      >
+                        <svg
+                          width={24}
+                          height={24}
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke="currentColor"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="1.5"
+                            d="M18.25 12L5.75 5.75V18.25L18.25 12Z"
+                          />
+                        </svg>
+                      </button>
+                    ) : (
+                      <button
+                        className="focus:outline-none inline-flex items-center justify-center"
+                        onClick={() => togglePause()}
+                      >
+                        <svg
+                          width={24}
+                          height={24}
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke="currentColor"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="1.5"
+                            d="M15.25 6.75V17.25"
+                          />
+                          <path
+                            stroke="currentColor"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="1.5"
+                            d="M8.75 6.75V17.25"
+                          />
+                        </svg>
+                      </button>
+                    )}
+                  </>
                 ) : null}
               </section>
             </section>

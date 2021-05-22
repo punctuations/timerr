@@ -17,6 +17,7 @@ model Timer {
   name      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  paused    Boolean  @default(false)
   endsAt    String
   timeLeft  String
   notify    Boolean
