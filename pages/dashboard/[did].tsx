@@ -69,7 +69,7 @@ export default function Dashboard(props) {
         <title>Timerr</title>
       </Head>
 
-      {props.prisma[0] === undefined ? (
+      {props.prisma === undefined || props.prisma[0] === undefined ? (
         <main className="absolute w-full h-full grid place-content-center">
           <motion.section
             variants={container}
