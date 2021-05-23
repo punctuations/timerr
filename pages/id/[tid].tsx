@@ -379,60 +379,58 @@ export default function Timer(props) {
                 </CircularProgress>
                 <p>{timeRemaining}</p>
               </section>
-              <section className="flex flex-row justify-around border-t border-gray-100 pt-2 px-14">
-                {!props.childLock ? (
-                  <>
-                    {isPaused ? (
-                      <button
-                        className="focus:outline-none inline-flex items-center justify-center"
-                        onClick={() => togglePause()}
+              {!props.childLock ? (
+                <section className="flex flex-row justify-around border-t border-gray-100 pt-2 px-14">
+                  {isPaused ? (
+                    <button
+                      className="focus:outline-none inline-flex items-center justify-center"
+                      onClick={() => togglePause()}
+                    >
+                      <svg
+                        width={24}
+                        height={24}
+                        fill="none"
+                        viewBox="0 0 24 24"
                       >
-                        <svg
-                          width={24}
-                          height={24}
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            stroke="currentColor"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="1.5"
-                            d="M18.25 12L5.75 5.75V18.25L18.25 12Z"
-                          />
-                        </svg>
-                      </button>
-                    ) : (
-                      <button
-                        className="focus:outline-none inline-flex items-center justify-center"
-                        onClick={() => togglePause()}
+                        <path
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="1.5"
+                          d="M18.25 12L5.75 5.75V18.25L18.25 12Z"
+                        />
+                      </svg>
+                    </button>
+                  ) : (
+                    <button
+                      className="focus:outline-none inline-flex items-center justify-center"
+                      onClick={() => togglePause()}
+                    >
+                      <svg
+                        width={24}
+                        height={24}
+                        fill="none"
+                        viewBox="0 0 24 24"
                       >
-                        <svg
-                          width={24}
-                          height={24}
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            stroke="currentColor"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="1.5"
-                            d="M15.25 6.75V17.25"
-                          />
-                          <path
-                            stroke="currentColor"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="1.5"
-                            d="M8.75 6.75V17.25"
-                          />
-                        </svg>
-                      </button>
-                    )}
-                  </>
-                ) : null}
-              </section>
+                        <path
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="1.5"
+                          d="M15.25 6.75V17.25"
+                        />
+                        <path
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="1.5"
+                          d="M8.75 6.75V17.25"
+                        />
+                      </svg>
+                    </button>
+                  )}
+                </section>
+              ) : null}
             </section>
           </main>
         </>

@@ -17,15 +17,19 @@ const Timer = (props: {
     timeLeft: string;
     notify: boolean;
     childLock: boolean;
+    paused: boolean;
   };
 }) => {
   const router = useRouter();
-  const [delay] = React.useState(1000);
-  const [remaining, setRemaining] = React.useState("");
-  const [progress, setProgress] = React.useState(0);
-  const [isRunning] = React.useState(true);
 
-  const [deleteState, setDeleteState] = React.useState(false);
+  const [delay] = React.useState<number>(1000);
+  const [remaining, setRemaining] = React.useState<string>("");
+  const [progress, setProgress] = React.useState<number>(0);
+  const [isRunning] = React.useState<boolean>(true);
+
+  const [deleteState, setDeleteState] = React.useState<boolean>(false);
+
+  const [isPaused, setIsPaused] = React.useState<boolean>(props.timer.paused);
 
   useInterval(
     () => {
@@ -53,9 +57,29 @@ const Timer = (props: {
     isRunning ? delay : null
   );
 
+  function togglePause() {
+    setIsPaused(!isPaused);
+
+    fetch(
+      process.env.NODE_ENV === "development"
+        ? "http://localhost:3000/api/pause" // REPLACE WITH YOUR URL
+        : "https://timerr.vercel.app/api/pause",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          uuid: props.timer.timerUUID,
+          pausedState: !props.timer.paused,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  }
+
   return (
     <>
-      <section className="flex flex-row justify-around px-5 p-4 pb-2">
+      <section className="flex flex-row justify-around px-5 p-4">
         <header className="flex flex-col">
           <h1 className="text-3xl font-bold">{props.timer.name}</h1>
           <p className="text-sm">
@@ -69,6 +93,7 @@ const Timer = (props: {
               {Math.trunc(progress)}%
             </CircularProgressLabel>
           </CircularProgress>
+
           <button
             className="focus:outline-none"
             onClick={() => router.push(`/id/${props.timer.timerUUID}`)}
@@ -103,37 +128,48 @@ const Timer = (props: {
           </button>
         </section>
       </section>
-      <section className="flex flex-row justify-around border-t border-gray-100 p-4 pt-2">
-        {!props.timer.childLock ? (
-          <div className="inline-flex items-center justify-center">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              viewBox="0 0 20 20"
-              fill="currentColor"
+      {!props.timer.childLock ? (
+        <section className="flex flex-row justify-around border-t border-gray-100 p-4 pt-2">
+          {isPaused ? (
+            <button
+              className="focus:outline-none inline-flex items-center justify-center"
+              onClick={() => togglePause()}
             >
-              <path
-                fillRule="evenodd"
-                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z"
-                clipRule="evenodd"
-              />
-            </svg>{" "}
-            /{" "}
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              viewBox="0 0 20 20"
-              fill="currentColor"
+              <svg width={24} height={24} fill="none" viewBox="0 0 24 24">
+                <path
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="1.5"
+                  d="M18.25 12L5.75 5.75V18.25L18.25 12Z"
+                />
+              </svg>
+            </button>
+          ) : (
+            <button
+              className="focus:outline-none inline-flex items-center justify-center"
+              onClick={() => togglePause()}
             >
-              <path
-                fillRule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
-                clipRule="evenodd"
-              />
-            </svg>{" "}
-          </div>
-        ) : null}
-      </section>
+              <svg width={24} height={24} fill="none" viewBox="0 0 24 24">
+                <path
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="1.5"
+                  d="M15.25 6.75V17.25"
+                />
+                <path
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="1.5"
+                  d="M8.75 6.75V17.25"
+                />
+              </svg>
+            </button>
+          )}
+        </section>
+      ) : null}
 
       <Delete
         state={deleteState}
