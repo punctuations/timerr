@@ -38,7 +38,7 @@ const Timer = (props: {
       const currentTime = moment().unix();
 
       const endingTime = moment(props.timer.endsAt).unix();
-      const creationTime = moment(props.timer.createdAt).unix();
+      const creationTime = moment(props.timer.updatedAt).unix();
 
       setProgress(
         moment().unix() > moment(props.timer.endsAt).unix()
