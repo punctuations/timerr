@@ -72,6 +72,8 @@ export default function CreateNew() {
   useKeyPressEvent("Enter", increment);
 
   function submitTimer() {
+    setSubmitted(true);
+
     fetch(
       process.env.NODE_ENV === "development"
         ? "http://localhost:3000/api/create" // REPLACE WITH YOUR URL
