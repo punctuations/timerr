@@ -17,6 +17,8 @@ export default function Home() {
   const [stage, setStage] = useState<number>(0);
   const [name, setName] = useState<string>("My timer");
   const [time, setTime] = useState<null | string>(null);
+  const [rawTime, setRawTime] = useState<null | number>(null);
+  const [rawUnits, setRawUnits] = useState<null | String>(null);
   const [previewTime, setPreviewTime] = useState<string>("Minutes");
   const [checked, setChecked] = useState<boolean>(false);
   const [notifyPref, setNotifyPref] = useState<boolean>(true);
@@ -27,7 +29,7 @@ export default function Home() {
     handleDateChange(timeRef?.current?.value, unitsRef?.current?.value);
   }, [timeRef, unitsRef]);
 
-  const handleDateChange = (time?: number | null, units?: String | null) => {
+  const handleDateChange = (time?: number | null, units?: string | null) => {
     if (time && units) {
       setTime(
         moment(
@@ -37,10 +39,16 @@ export default function Home() {
           )
         ).format()
       );
+      setRawTime(time);
+      setRawUnits(units);
     } else if (time && !units) {
       setTime(moment(moment().add(time, "minutes")).format());
+      setRawTime(time);
+      setRawUnits("minutes");
     } else {
       setTime(moment(moment().add(5, "minutes")).format());
+      setRawTime(5);
+      setRawUnits("minutes");
     }
   };
 
@@ -75,6 +83,8 @@ export default function Home() {
           uuid: crypto.randomBytes(32).toString("hex"),
           name: name,
           time: time,
+          rawTime: rawTime,
+          rawUnits: rawUnits,
           childLock: checked,
           notifyPref: notifyPref,
         }),

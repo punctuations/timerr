@@ -15,6 +15,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           notify: req.body.notifyPref,
           childLock: req.body.childLock,
           endsAt: req.body.time,
+          rawTime: req.body.rawTime,
+          rawUnits: req.body.rawUnits,
           timeLeft: moment(req.body.time).from(new Date().toUTCString()),
         },
       })

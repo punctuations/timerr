@@ -19,6 +19,8 @@ model Timer {
   updatedAt DateTime @updatedAt
   paused    Boolean  @default(false)
   endsAt    String
+  rawTime   Int
+  rawUnits  String
   timeLeft  String
   notify    Boolean
   childLock Boolean

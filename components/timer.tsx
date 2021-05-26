@@ -18,6 +18,8 @@ const Timer = (props: {
     notify: boolean;
     childLock: boolean;
     paused: boolean;
+    rawTime: number;
+    rawUnits: string;
   };
 }) => {
   const router = useRouter();
@@ -30,32 +32,40 @@ const Timer = (props: {
   const [deleteState, setDeleteState] = React.useState<boolean>(false);
 
   const [isPaused, setIsPaused] = React.useState<boolean>(props.timer.paused);
+  const [isRefreshing, setRefreshing] = React.useState<boolean>(false);
 
-  useInterval(
-    () => {
-      setRemaining(moment(props.timer.endsAt).from(new Date().toUTCString()));
+  React.useEffect(() => {
+    setProgress(
+      moment().unix() > moment(props.timer.endsAt).unix()
+        ? 100
+        : 100 -
+            (Math.abs(moment().unix() - moment(props.timer.endsAt).unix()) /
+              (Math.abs(moment().unix() - moment(props.timer.endsAt).unix()) +
+                moment().unix() -
+                moment(props.timer.updatedAt).unix())) *
+              100
+    );
+  }, []);
 
-      const currentTime = moment().unix();
+  useInterval(() => {
+    setRemaining(moment(props.timer.endsAt).from(new Date().toUTCString()));
 
-      const endingTime = moment(props.timer.endsAt).unix();
-      const creationTime = moment(props.timer.updatedAt).unix();
+    const currentTime = moment().unix();
 
-      setProgress(
-        moment().unix() > moment(props.timer.endsAt).unix()
-          ? 100
-          : 100 -
-              (Math.abs(currentTime - endingTime) /
-                (Math.abs(currentTime - endingTime) +
-                  currentTime -
-                  creationTime)) *
-                100
-      );
+    const endingTime = moment(props.timer.endsAt).unix();
+    const creationTime = moment(props.timer.updatedAt).unix();
 
-      //toggleIsRunning(Math.trunc(timerStates[0]) !== 100);
-      //setState(Math.trunc(timerStates[0]) === 100);
-    },
-    isRunning ? delay : null
-  );
+    setProgress(
+      moment().unix() > moment(props.timer.endsAt).unix()
+        ? 100
+        : 100 -
+            (Math.abs(currentTime - endingTime) /
+              (Math.abs(currentTime - endingTime) +
+                currentTime -
+                creationTime)) *
+              100
+    );
+  }, delay);
 
   function togglePause() {
     setIsPaused(!isPaused);
@@ -75,6 +85,29 @@ const Timer = (props: {
         },
       }
     );
+  }
+
+  function reset() {
+    setRefreshing(true);
+
+    fetch(
+      process.env.NODE_ENV === "development"
+        ? "http://localhost:3000/api/reset" // REPLACE WITH YOUR URL
+        : "https://timerr.vercel.app/api/reset",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          uuid: props.timer.timerUUID,
+          createdAt: props.timer.createdAt,
+          endsAt: props.timer.endsAt,
+          rawTime: props.timer.rawTime,
+          rawUnits: props.timer.rawUnits,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    ).then(() => window.location.reload());
   }
 
   return (
@@ -129,7 +162,7 @@ const Timer = (props: {
         </section>
       </section>
       {!props.timer.childLock ? (
-        <section className="flex flex-row justify-around border-t border-gray-100 p-4 pt-2">
+        <section className="flex flex-row justify-center space-x-4 border-t border-gray-100 p-4 pt-2">
           {isPaused ? (
             <button
               className="focus:outline-none inline-flex items-center justify-center"
@@ -164,6 +197,76 @@ const Timer = (props: {
                   strokeLinejoin="round"
                   strokeWidth="1.5"
                   d="M8.75 6.75V17.25"
+                />
+              </svg>
+            </button>
+          )}
+          {isRefreshing ? (
+            <button className="focus:outline-none inline-flex items-center justify-center cursor-not-allowed text-gray-400 animate-spin">
+              <svg width={24} height={24} fill="none" viewBox="0 0 24 24">
+                <path
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="1.5"
+                  d="M11.25 4.75L8.75 7L11.25 9.25"
+                />
+                <path
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="1.5"
+                  d="M12.75 19.25L15.25 17L12.75 14.75"
+                />
+                <path
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="1.5"
+                  d="M9.75 7H13.25C16.5637 7 19.25 9.68629 19.25 13V13.25"
+                />
+                <path
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="1.5"
+                  d="M14.25 17H10.75C7.43629 17 4.75 14.3137 4.75 11V10.75"
+                />
+              </svg>
+            </button>
+          ) : (
+            <button
+              className="focus:outline-none inline-flex items-center justify-center"
+              onClick={() => reset()}
+            >
+              <svg width={24} height={24} fill="none" viewBox="0 0 24 24">
+                <path
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="1.5"
+                  d="M11.25 4.75L8.75 7L11.25 9.25"
+                />
+                <path
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="1.5"
+                  d="M12.75 19.25L15.25 17L12.75 14.75"
+                />
+                <path
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="1.5"
+                  d="M9.75 7H13.25C16.5637 7 19.25 9.68629 19.25 13V13.25"
+                />
+                <path
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="1.5"
+                  d="M14.25 17H10.75C7.43629 17 4.75 14.3137 4.75 11V10.75"
                 />
               </svg>
             </button>

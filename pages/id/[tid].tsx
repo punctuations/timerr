@@ -62,12 +62,13 @@ export default function Timer(props) {
 
   const [success, setSuccess] = useBoolean(false);
 
-  const [notified, setNotified] = useState(false);
+  const [notified, setNotified] = useState<boolean>(false);
+  const [messageDisplayed, setMessageDisplayed] = useState<boolean>(false);
 
   const [isPaused, setIsPaused] = useState<boolean>(props.paused);
+  const [isRefreshing, setRefreshing] = useState<boolean>(false);
 
   useEffect(() => {
-    setRemaining(moment(props.endsAt).from(new Date().toUTCString()));
     setProgressState(
       moment().unix() > moment(props.endsAt).unix()
         ? 100
@@ -75,38 +76,40 @@ export default function Timer(props) {
             (Math.abs(moment().unix() - moment(props.endsAt).unix()) /
               (Math.abs(moment().unix() - moment(props.endsAt).unix()) +
                 moment().unix() -
-                moment(props.createdAt).unix())) *
+                moment(props.updatedAt).unix())) *
               100
     );
   }, []);
 
-  useInterval(
-    () => {
-      if (!props.paused) {
-        setRemaining(moment(props.endsAt).from(new Date().toUTCString()));
+  useInterval(() => {
+    if (!props.paused) {
+      setRemaining(moment(props.endsAt).from(new Date().toUTCString()));
 
-        const currentTime = moment().unix();
+      const currentTime = moment().unix();
 
-        const endingTime = moment(props.endsAt).unix();
-        const creationTime = moment(props.updatedAt).unix();
+      const endingTime = moment(props.endsAt).unix();
+      const creationTime = moment(props.updatedAt).unix();
 
-        setProgressState(
-          moment().unix() > moment(props.endsAt).unix()
-            ? 100
-            : 100 -
-                (Math.abs(currentTime - endingTime) /
-                  (Math.abs(currentTime - endingTime) +
-                    currentTime -
-                    creationTime)) *
-                  100
-        );
-      }
+      setProgressState(
+        moment().unix() > moment(props.endsAt).unix()
+          ? 100
+          : 100 -
+              (Math.abs(currentTime - endingTime) /
+                (Math.abs(currentTime - endingTime) +
+                  currentTime -
+                  creationTime)) *
+                100
+      );
+      setRemaining(moment(props.endsAt).from(new Date().toUTCString()));
+    }
 
-      toggleIsRunning(Math.trunc(progress) !== 100);
+    toggleIsRunning(Math.trunc(progress) !== 100);
+
+    if (!messageDisplayed) {
+      setMessageDisplayed(true);
       setState(Math.trunc(progress) === 100);
-    },
-    isRunning ? delay : null
-  );
+    }
+  }, delay);
 
   if (Math.trunc(progress) == 100 && !notified && props.notify) {
     setNotified(true);
@@ -171,6 +174,29 @@ export default function Timer(props) {
     );
   }
 
+  function reset() {
+    setRefreshing(true);
+
+    fetch(
+      process.env.NODE_ENV === "development"
+        ? "http://localhost:3000/api/reset" // REPLACE WITH YOUR URL
+        : "https://timerr.vercel.app/api/reset",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          uuid: props.timerUUID,
+          createdAt: props.createdAt,
+          endsAt: props.endsAt,
+          rawTime: props.rawTime,
+          rawUnits: props.rawUnits,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    ).then(() => window.location.reload());
+  }
+
   return (
     <>
       <Head>
@@ -211,7 +237,7 @@ export default function Timer(props) {
               {Math.trunc(progress) === 100 ? (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="absolute -top-2 -left-2 h-5 w-5 text-blue-600"
+                  className="absolute -top-2 -left-2 h-5 w-5 text-blue-600 cursor-pointer"
                   viewBox="0 0 20 20"
                   fill="currentColor"
                   onClick={() => setState(true)}
@@ -425,6 +451,86 @@ export default function Timer(props) {
                           strokeLinejoin="round"
                           strokeWidth="1.5"
                           d="M8.75 6.75V17.25"
+                        />
+                      </svg>
+                    </button>
+                  )}
+                  {isRefreshing ? (
+                    <button className="focus:outline-none inline-flex items-center justify-center cursor-not-allowed text-gray-400 animate-spin">
+                      <svg
+                        width={24}
+                        height={24}
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="1.5"
+                          d="M11.25 4.75L8.75 7L11.25 9.25"
+                        />
+                        <path
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="1.5"
+                          d="M12.75 19.25L15.25 17L12.75 14.75"
+                        />
+                        <path
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="1.5"
+                          d="M9.75 7H13.25C16.5637 7 19.25 9.68629 19.25 13V13.25"
+                        />
+                        <path
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="1.5"
+                          d="M14.25 17H10.75C7.43629 17 4.75 14.3137 4.75 11V10.75"
+                        />
+                      </svg>
+                    </button>
+                  ) : (
+                    <button
+                      className="focus:outline-none inline-flex items-center justify-center"
+                      onClick={() => reset()}
+                    >
+                      <svg
+                        width={24}
+                        height={24}
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="1.5"
+                          d="M11.25 4.75L8.75 7L11.25 9.25"
+                        />
+                        <path
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="1.5"
+                          d="M12.75 19.25L15.25 17L12.75 14.75"
+                        />
+                        <path
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="1.5"
+                          d="M9.75 7H13.25C16.5637 7 19.25 9.68629 19.25 13V13.25"
+                        />
+                        <path
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="1.5"
+                          d="M14.25 17H10.75C7.43629 17 4.75 14.3137 4.75 11V10.75"
                         />
                       </svg>
                     </button>
