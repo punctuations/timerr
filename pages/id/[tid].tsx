@@ -57,7 +57,7 @@ export default function Timer(props) {
   const [timeRemaining, setRemaining] = useState(props.timeLeft);
 
   const [state, setState] = useBoolean(false);
-  const [delay] = useState(500);
+  const [delay] = useState(1000);
   const [isRunning, toggleIsRunning] = useBoolean(true);
 
   const [success, setSuccess] = useBoolean(false);
@@ -83,8 +83,22 @@ export default function Timer(props) {
 
   useInterval(() => {
     if (!props.paused) {
-      setRemaining(moment(props.endsAt).from(new Date().toUTCString()));
+      setRemaining(
+        moment(props.endsAt).diff(moment(), "hours") <= 0 &&
+          moment(props.endsAt).diff(moment(), "minutes") <= 0 &&
+          moment(props.endsAt).diff(moment(), "seconds") <= 0
+          ? "0 : 0 : 0"
+          : `${moment(props.endsAt).diff(moment(), "hours")} : ${moment(
+              props.endsAt
+            ).diff(moment(), "minutes")} : ${
+              moment(props.endsAt).diff(moment(), "seconds") % 60
+            }`
+      );
+    }
+  }, delay);
 
+  useInterval(() => {
+    if (!props.paused) {
       const currentTime = moment().unix();
 
       const endingTime = moment(props.endsAt).unix();
@@ -100,7 +114,6 @@ export default function Timer(props) {
                   creationTime)) *
                 100
       );
-      setRemaining(moment(props.endsAt).from(new Date().toUTCString()));
     }
 
     toggleIsRunning(Math.trunc(progress) !== 100);

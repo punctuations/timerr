@@ -48,8 +48,22 @@ const Timer = (props: {
   }, []);
 
   useInterval(() => {
-    setRemaining(moment(props.timer.endsAt).from(new Date().toUTCString()));
+    if (!props.timer.paused) {
+      setRemaining(
+        moment(props.timer.endsAt).diff(moment(), "hours") <= 0 &&
+          moment(props.timer.endsAt).diff(moment(), "minutes") <= 0 &&
+          moment(props.timer.endsAt).diff(moment(), "seconds") <= 0
+          ? "0 : 0 : 0"
+          : `${moment(props.timer.endsAt).diff(moment(), "hours")} : ${moment(
+              props.timer.endsAt
+            ).diff(moment(), "minutes")} : ${
+              moment(props.timer.endsAt).diff(moment(), "seconds") % 60
+            }`
+      );
+    }
+  }, delay);
 
+  useInterval(() => {
     const currentTime = moment().unix();
 
     const endingTime = moment(props.timer.endsAt).unix();
@@ -120,7 +134,9 @@ const Timer = (props: {
           </p>
         </header>
         <section className="flex flex-row space-x-3 justify-center items-center">
-          <p>{remaining}</p>
+          <p className="2xl:text-lg xl:text-lg lg:text-lg text-base">
+            {remaining}
+          </p>
           <CircularProgress value={Math.trunc(progress)} thickness={7}>
             <CircularProgressLabel>
               {Math.trunc(progress)}%

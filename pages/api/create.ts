@@ -17,7 +17,12 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           endsAt: req.body.time,
           rawTime: req.body.rawTime,
           rawUnits: req.body.rawUnits,
-          timeLeft: moment(req.body.time).from(new Date().toUTCString()),
+          timeLeft: `${moment(req.body.time).diff(
+            moment(),
+            "hours"
+          )} : ${moment(req.body.time).diff(moment(), "minutes")} : ${
+            moment(req.body.time).diff(moment(), "seconds") % 60
+          }`,
         },
       })
       .catch((err) => console.log(err));
