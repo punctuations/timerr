@@ -24,10 +24,12 @@
 		"moment": "^2.29.1",
 		"next": "10.0.4",
 		"react": "17.0.1",
+		"react-countdown": "^2.3.2",
 		"react-dom": "17.0.1",
 		"react-hot-toast": "^1.0.2",
 		"react-number-format": "^4.5.5",
-		"react-use": "^17.1.1"
+		"react-use": "^17.1.1",
+		"swr": "^0.5.6"
 	},
 	"devDependencies": {
 		"@types/node": "^14.14.16",

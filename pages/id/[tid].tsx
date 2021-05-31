@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import Head from "next/head";
 import moment from "moment";
-import { CircularProgress, CircularProgressLabel } from "@chakra-ui/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useBoolean, useInterval } from "react-use";
 import { useRouter } from "next/router";
+
+import { CountdownComponent } from "@components/countdownApi";
 
 export async function getServerSideProps({ params }) {
   const { tid } = params;
@@ -54,19 +55,14 @@ export default function Timer(props) {
   const router = useRouter();
 
   const [progress, setProgressState] = useState(0);
-  const [timeRemaining, setRemaining] = useState(props.timeLeft);
 
   const [state, setState] = useBoolean(false);
   const [delay] = useState(1000);
-  const [isRunning, toggleIsRunning] = useBoolean(true);
 
   const [success, setSuccess] = useBoolean(false);
 
   const [notified, setNotified] = useState<boolean>(false);
   const [messageDisplayed, setMessageDisplayed] = useState<boolean>(false);
-
-  const [isPaused, setIsPaused] = useState<boolean>(props.paused);
-  const [isRefreshing, setRefreshing] = useState<boolean>(false);
 
   useEffect(() => {
     setProgressState(
@@ -80,22 +76,6 @@ export default function Timer(props) {
               100
     );
   }, []);
-
-  useInterval(() => {
-    if (!props.paused) {
-      setRemaining(
-        moment(props.endsAt).diff(moment(), "hours") <= 0 &&
-          moment(props.endsAt).diff(moment(), "minutes") <= 0 &&
-          moment(props.endsAt).diff(moment(), "seconds") <= 0
-          ? "0 : 0 : 0"
-          : `${moment(props.endsAt).diff(moment(), "hours")} : ${moment(
-              props.endsAt
-            ).diff(moment(), "minutes")} : ${
-              moment(props.endsAt).diff(moment(), "seconds") % 60
-            }`
-      );
-    }
-  }, delay);
 
   useInterval(() => {
     if (!props.paused) {
@@ -115,8 +95,6 @@ export default function Timer(props) {
                 100
       );
     }
-
-    toggleIsRunning(Math.trunc(progress) !== 100);
 
     if (!messageDisplayed) {
       setMessageDisplayed(true);
@@ -165,49 +143,6 @@ export default function Timer(props) {
       .then((res) => res.json())
       .then((r) => setSuccess(r.success))
       .then(() => router.push("/"));
-  }
-
-  function togglePause() {
-    setIsPaused(!isPaused);
-
-    fetch(
-      process.env.NODE_ENV === "development"
-        ? "http://localhost:3000/api/pause" // REPLACE WITH YOUR URL
-        : "https://timerr.vercel.app/api/pause",
-      {
-        method: "POST",
-        body: JSON.stringify({
-          uuid: props.timerUUID,
-          pausedState: !props.paused,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-  }
-
-  function reset() {
-    setRefreshing(true);
-
-    fetch(
-      process.env.NODE_ENV === "development"
-        ? "http://localhost:3000/api/reset" // REPLACE WITH YOUR URL
-        : "https://timerr.vercel.app/api/reset",
-      {
-        method: "POST",
-        body: JSON.stringify({
-          uuid: props.timerUUID,
-          createdAt: props.createdAt,
-          endsAt: props.endsAt,
-          rawTime: props.rawTime,
-          rawUnits: props.rawUnits,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    ).then(() => window.location.reload());
   }
 
   return (
@@ -410,146 +345,16 @@ export default function Timer(props) {
                   Created on: {new Date(props.createdAt).toLocaleDateString()}
                 </p>
               </header>
-              <section className="flex flex-col space-y-3 justify-center items-center px-14">
-                <CircularProgress value={Math.trunc(progress)} thickness={7}>
-                  <CircularProgressLabel>
-                    {Math.trunc(progress)}%
-                  </CircularProgressLabel>
-                </CircularProgress>
-                <p>{timeRemaining}</p>
-              </section>
-              {!props.childLock ? (
-                <section className="flex flex-row justify-around border-t border-gray-100 pt-2 px-14">
-                  {isPaused ? (
-                    <button
-                      className="focus:outline-none inline-flex items-center justify-center"
-                      onClick={() => togglePause()}
-                    >
-                      <svg
-                        width={24}
-                        height={24}
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke="currentColor"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="1.5"
-                          d="M18.25 12L5.75 5.75V18.25L18.25 12Z"
-                        />
-                      </svg>
-                    </button>
-                  ) : (
-                    <button
-                      className="focus:outline-none inline-flex items-center justify-center"
-                      onClick={() => togglePause()}
-                    >
-                      <svg
-                        width={24}
-                        height={24}
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke="currentColor"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="1.5"
-                          d="M15.25 6.75V17.25"
-                        />
-                        <path
-                          stroke="currentColor"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="1.5"
-                          d="M8.75 6.75V17.25"
-                        />
-                      </svg>
-                    </button>
-                  )}
-                  {isRefreshing ? (
-                    <button className="focus:outline-none inline-flex items-center justify-center cursor-not-allowed text-gray-400 animate-spin">
-                      <svg
-                        width={24}
-                        height={24}
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke="currentColor"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="1.5"
-                          d="M11.25 4.75L8.75 7L11.25 9.25"
-                        />
-                        <path
-                          stroke="currentColor"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="1.5"
-                          d="M12.75 19.25L15.25 17L12.75 14.75"
-                        />
-                        <path
-                          stroke="currentColor"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="1.5"
-                          d="M9.75 7H13.25C16.5637 7 19.25 9.68629 19.25 13V13.25"
-                        />
-                        <path
-                          stroke="currentColor"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="1.5"
-                          d="M14.25 17H10.75C7.43629 17 4.75 14.3137 4.75 11V10.75"
-                        />
-                      </svg>
-                    </button>
-                  ) : (
-                    <button
-                      className="focus:outline-none inline-flex items-center justify-center"
-                      onClick={() => reset()}
-                    >
-                      <svg
-                        width={24}
-                        height={24}
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke="currentColor"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="1.5"
-                          d="M11.25 4.75L8.75 7L11.25 9.25"
-                        />
-                        <path
-                          stroke="currentColor"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="1.5"
-                          d="M12.75 19.25L15.25 17L12.75 14.75"
-                        />
-                        <path
-                          stroke="currentColor"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="1.5"
-                          d="M9.75 7H13.25C16.5637 7 19.25 9.68629 19.25 13V13.25"
-                        />
-                        <path
-                          stroke="currentColor"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="1.5"
-                          d="M14.25 17H10.75C7.43629 17 4.75 14.3137 4.75 11V10.75"
-                        />
-                      </svg>
-                    </button>
-                  )}
-                </section>
-              ) : null}
+              <CountdownComponent
+                UUID={props.timerUUID}
+                createdAt={props.createdAt}
+                rawTime={props.rawTime}
+                rawUnits={props.rawUnits}
+                endsAt={props.endsAt}
+                paused={props.paused}
+                childLock={props.childLock}
+                orientation={true}
+              />
             </section>
           </main>
         </>
