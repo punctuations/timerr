@@ -273,9 +273,9 @@ export default function CreateNew() {
                       setPreviewTime(e.target.value as string)
                     }
                   >
-                    <MenuItem value={10}>Seconds</MenuItem>
-                    <MenuItem value={20}>Minutes</MenuItem>
-                    <MenuItem value={30}>Hours</MenuItem>
+                    <MenuItem value={"Seconds"}>Seconds</MenuItem>
+                    <MenuItem value={"Minutes"}>Minutes</MenuItem>
+                    <MenuItem value={"Hours"}>Hours</MenuItem>
                   </Select>
                 </div>
               </>
