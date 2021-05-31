@@ -19,7 +19,7 @@ export default function Home() {
   const [time, setTime] = useState<null | string>(null);
   const [rawTime, setRawTime] = useState<null | number>(null);
   const [rawUnits, setRawUnits] = useState<null | String>(null);
-  const [previewTime, setPreviewTime] = useState<string>("Minutes");
+  const [previewTime, setPreviewTime] = useState<string>("M");
   const [checked, setChecked] = useState<boolean>(false);
   const [notifyPref, setNotifyPref] = useState<boolean>(true);
 
@@ -276,9 +276,9 @@ export default function Home() {
                       setPreviewTime(e.target.value as string)
                     }
                   >
-                    <MenuItem value={"Hours"}>Hours</MenuItem>
-                    <MenuItem value={"Minutes"}>Minutes</MenuItem>
-                    <MenuItem value={"seconds"}>seconds</MenuItem>
+                    <MenuItem value={"H"}>Hours</MenuItem>
+                    <MenuItem value={"M"}>Minutes</MenuItem>
+                    <MenuItem value={"S"}>Seconds</MenuItem>
                   </Select>
                 </div>
               </>
