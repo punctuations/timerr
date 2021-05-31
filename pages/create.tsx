@@ -276,9 +276,9 @@ export default function Home() {
                       setPreviewTime(e.target.value as string)
                     }
                   >
-                    <MenuItem value={"Seconds"}>Seconds</MenuItem>
-                    <MenuItem value={"Minutes"}>Minutes</MenuItem>
                     <MenuItem value={"Hours"}>Hours</MenuItem>
+                    <MenuItem value={"Minutes"}>Minutes</MenuItem>
+                    <MenuItem value={"seconds"}>seconds</MenuItem>
                   </Select>
                 </div>
               </>
