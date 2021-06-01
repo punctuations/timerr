@@ -12,15 +12,14 @@ import moment, { DurationInputArg1, DurationInputArg2 } from "moment";
 export default function CreateNew() {
   const router = useRouter();
   const timeRef = useRef(null);
-  const unitsRef = useRef(null);
 
   const { dash } = router.query;
 
   const [stage, setStage] = useState<number>(0);
   const [name, setName] = useState<string>("My timer");
   const [time, setTime] = useState<null | string>(null);
-  const [rawTime, setRawTime] = useState<null | number>(null);
-  const [rawUnits, setRawUnits] = useState<null | String>(null);
+  const [rawTime, setRawTime] = useState<number>(5);
+  const [rawUnits, setRawUnits] = useState<string>("Minutes");
   const [previewTime, setPreviewTime] = useState<string>("Minutes");
   const [checked, setChecked] = useState<boolean>(false);
   const [notifyPref, setNotifyPref] = useState<boolean>(true);
@@ -28,10 +27,15 @@ export default function CreateNew() {
   const [submitted, setSubmitted] = useState<boolean>(false);
 
   useEffect(() => {
-    handleDateChange(timeRef?.current?.value, unitsRef?.current?.value);
-  }, [timeRef, unitsRef]);
+    handleDateChange(timeRef?.current?.value);
+  }, [timeRef]);
 
-  const handleDateChange = (time?: number | null, units?: String | null) => {
+  function handleUnitChange(value: string) {
+    setPreviewTime(value);
+    handleDateChange(null, value);
+  }
+
+  const handleDateChange = (time?: number | null, units?: string | null) => {
     if (time && units) {
       setTime(
         moment(
@@ -44,9 +48,27 @@ export default function CreateNew() {
       setRawTime(time);
       setRawUnits(units);
     } else if (time && !units) {
-      setTime(moment(moment().add(time, "minutes")).format());
+      setTime(
+        moment(
+          moment().add(
+            time as DurationInputArg1,
+            rawUnits.toLowerCase() as DurationInputArg2
+          )
+        ).format()
+      );
       setRawTime(time);
       setRawUnits("minutes");
+    } else if (!time && units) {
+      setTime(
+        moment(
+          moment().add(
+            rawTime as DurationInputArg1,
+            units.toLowerCase() as DurationInputArg2
+          )
+        ).format()
+      );
+      setRawTime(5);
+      setRawUnits(units);
     } else {
       setTime(moment(moment().add(5, "minutes")).format());
       setRawTime(5);
@@ -268,9 +290,8 @@ export default function CreateNew() {
                   <Select
                     className="w-30"
                     value={previewTime}
-                    ref={unitsRef}
                     onChange={(e: ChangeEvent<{ value: unknown }>) =>
-                      setPreviewTime(e.target.value as string)
+                      handleUnitChange(e.target.value as string)
                     }
                   >
                     <MenuItem value={"Seconds"}>Seconds</MenuItem>
