@@ -6,6 +6,7 @@ import { useBoolean, useInterval } from "react-use";
 import { useRouter } from "next/router";
 
 import { CountdownComponent } from "@components/countdownApi";
+import useSWR from "swr";
 
 export async function getServerSideProps({ params }) {
   const { tid } = params;
@@ -54,6 +55,32 @@ export default function Timer(props) {
 
   const router = useRouter();
 
+  const { tid } = router.query;
+
+  const fetcher = (url) =>
+    fetch(url, {
+      method: "POST",
+      body: JSON.stringify({
+        uuid: tid,
+      }),
+      headers: {
+        "Content-Type": "Application/Json",
+      },
+    }).then((r) => r.json());
+  const { data } = useSWR(
+    process.env.NODE_ENV === "development"
+      ? "http://localhost:3000/api/read"
+      : "https://timerr.vercel.app/api/read",
+    fetcher,
+    {
+      initialData: props,
+      revalidateOnFocus: true,
+      refreshInterval: 500,
+    }
+  );
+
+  const timer = data.prisma ? data.prisma : props;
+
   const [progress, setProgressState] = useState(0);
 
   const [state, setState] = useBoolean(false);
@@ -66,11 +93,11 @@ export default function Timer(props) {
 
   useEffect(() => {
     setProgressState(
-      moment().unix() > moment(props.endsAt).unix()
+      moment().unix() > moment(timer.endsAt).unix()
         ? 100
         : 100 -
-            (Math.abs(moment().unix() - moment(props.endsAt).unix()) /
-              (Math.abs(moment().unix() - moment(props.endsAt).unix()) +
+            (Math.abs(moment().unix() - moment(timer.endsAt).unix()) /
+              (Math.abs(moment().unix() - moment(timer.endsAt).unix()) +
                 moment().unix() -
                 moment(props.updatedAt).unix())) *
               100
@@ -81,11 +108,11 @@ export default function Timer(props) {
     if (!props.paused) {
       const currentTime = moment().unix();
 
-      const endingTime = moment(props.endsAt).unix();
+      const endingTime = moment(timer.endsAt).unix();
       const creationTime = moment(props.updatedAt).unix();
 
       setProgressState(
-        moment().unix() > moment(props.endsAt).unix()
+        moment().unix() > moment(timer.endsAt).unix()
           ? 100
           : 100 -
               (Math.abs(currentTime - endingTime) /
@@ -350,8 +377,8 @@ export default function Timer(props) {
                 createdAt={props.createdAt}
                 rawTime={props.rawTime}
                 rawUnits={props.rawUnits}
-                endsAt={props.endsAt}
-                paused={props.paused}
+                endsAt={timer.endsAt}
+                paused={timer.paused}
                 childLock={props.childLock}
                 orientation={true}
               />

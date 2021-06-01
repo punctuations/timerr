@@ -19,7 +19,7 @@ export default function Home() {
   const [time, setTime] = useState<null | string>(null);
   const [rawTime, setRawTime] = useState<null | number>(null);
   const [rawUnits, setRawUnits] = useState<null | String>(null);
-  const [previewTime, setPreviewTime] = useState<string>("M");
+  const [previewTime, setPreviewTime] = useState<string>("Minutes");
   const [checked, setChecked] = useState<boolean>(false);
   const [notifyPref, setNotifyPref] = useState<boolean>(true);
 
@@ -27,6 +27,7 @@ export default function Home() {
 
   useEffect(() => {
     handleDateChange(timeRef?.current?.value, unitsRef?.current?.value);
+    console.log(timeRef?.current?.value, unitsRef?.current?.value);
   }, [timeRef, unitsRef]);
 
   const handleDateChange = (time?: number | null, units?: string | null) => {
@@ -276,9 +277,9 @@ export default function Home() {
                       setPreviewTime(e.target.value as string)
                     }
                   >
-                    <MenuItem value={"H"}>Hours</MenuItem>
-                    <MenuItem value={"M"}>Minutes</MenuItem>
-                    <MenuItem value={"S"}>Seconds</MenuItem>
+                    <MenuItem value={"Hours"}>Hours</MenuItem>
+                    <MenuItem value={"Minutes"}>Minutes</MenuItem>
+                    <MenuItem value={"Seconds"}>Seconds</MenuItem>
                   </Select>
                 </div>
               </>

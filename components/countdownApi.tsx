@@ -1,6 +1,5 @@
 import React, { ReactNode } from "react";
 import Countdown, { CountdownApi } from "react-countdown";
-import useSWR from "swr";
 import { useInterval } from "react-use";
 import moment, { Moment } from "moment";
 
@@ -15,36 +14,12 @@ export const CountdownComponent = (props: {
   orientation?: boolean;
   children?: ReactNode;
 }) => {
-  const fetcher = (url) =>
-    fetch(url, {
-      method: "POST",
-      body: JSON.stringify({
-        uuid: props.UUID,
-      }),
-      headers: {
-        "Content-Type": "Application/Json",
-      },
-    }).then((r) => r.json());
-  const { data } = useSWR(
-    process.env.NODE_ENV === "development"
-      ? "http://localhost:3000/api/read"
-      : "https://timerr.vercel.app/api/read",
-    fetcher,
-    {
-      initialData: props,
-      revalidateOnFocus: true,
-      refreshInterval: 500,
-    }
-  );
-
-  const timer = data.prisma ? data.prisma : props;
-
   const [endingTime, setEndingTime] = React.useState<Moment>(
     moment(props.endsAt)
   );
 
   useInterval(() => {
-    if (timer.paused) {
+    if (props.paused) {
       fetch(
         process.env.NODE_ENV === "development"
           ? "http://localhost:3000/api/update" // REPLACE WITH YOUR URL
@@ -74,9 +49,9 @@ export const CountdownComponent = (props: {
     countdownApi ? countdownApi.isCompleted() : null
   );
 
-  if (timer.paused && countdownApi) {
+  if (props.paused && countdownApi) {
     countdownApi.pause();
-  } else if (!timer.paused && countdownApi) {
+  } else if (!props.paused && countdownApi) {
     countdownApi.start();
   }
 
@@ -89,7 +64,7 @@ export const CountdownComponent = (props: {
         method: "POST",
         body: JSON.stringify({
           uuid: props.UUID,
-          pausedState: !timer.paused,
+          pausedState: !props.paused,
         }),
         headers: {
           "Content-Type": "application/json",
@@ -144,7 +119,7 @@ export const CountdownComponent = (props: {
           {" "}
           {!props.childLock ? (
             <section className="border-t border-gray-100 flex flex-row justify-around pt-2 px-14">
-              {timer.paused ? (
+              {props.paused ? (
                 <button
                   className="focus:outline-none inline-flex items-center text-red-500 duration-200 transition-colors hover:text-red-600"
                   type="button"
@@ -263,7 +238,7 @@ export const CountdownComponent = (props: {
       ) : (
         <section className="flex flex-row justify-between pt-2 px-14">
           <div className="flex flex-row justify-center space-x-2">
-            {timer.paused ? (
+            {props.paused ? (
               <button
                 className="focus:outline-none inline-flex items-center text-red-500 duration-200 transition-colors hover:text-red-600"
                 type="button"

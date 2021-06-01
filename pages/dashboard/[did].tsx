@@ -2,7 +2,9 @@ import Head from "next/head";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
 import React from "react";
-import Timer from "../../components/timer";
+import useSWR from "swr";
+import { CountdownComponent } from "@components/countdownApi";
+import Delete from "@components/delete";
 
 export async function getServerSideProps({ params }) {
   const { did } = params;
@@ -31,6 +33,33 @@ export async function getServerSideProps({ params }) {
 
 export default function Dashboard(props) {
   const router = useRouter();
+
+  const { did } = router.query;
+
+  const fetcher = (url) =>
+    fetch(url, {
+      method: "POST",
+      body: JSON.stringify({
+        dashUUID: did,
+      }),
+      headers: {
+        "Content-Type": "Application/Json",
+      },
+    }).then((r) => r.json());
+
+  const { data } = useSWR(
+    process.env.NODE_ENV === "development"
+      ? "http://localhost:3000/api/dash"
+      : "https://timerr.vercel.app/api/dash",
+    fetcher,
+    {
+      initialData: props,
+      revalidateOnFocus: true,
+      refreshInterval: 500,
+    }
+  );
+
+  const timer = data.prisma ? data : props;
 
   const container = {
     init: { opacity: 0, y: 10 },
@@ -62,6 +91,8 @@ export default function Dashboard(props) {
     init: { opacity: 0, y: 5 },
     enter: { opacity: 1, y: 0 },
   };
+
+  const [deleteState, setDeleteState] = React.useState<boolean>(false);
 
   return (
     <>
@@ -119,7 +150,7 @@ export default function Dashboard(props) {
               </motion.header>
             </motion.section>
 
-            {props.prisma.map((timer, i) => {
+            {timer.prisma.map((timer, i) => {
               return (
                 <motion.section
                   key={i}
@@ -128,7 +159,63 @@ export default function Dashboard(props) {
                   animate="enter"
                   className="2xl:w-1/3 xl:w-1/3 lg:w-1/2 md:w-1/2 sm:w-2/3 w-5/6 rounded-lg shadow-lg border border-gray-300"
                 >
-                  <Timer timer={timer} />
+                  <section className="flex flex-row justify-around px-5 p-4">
+                    <header className="flex flex-col">
+                      <h1 className="text-3xl font-bold">{timer.name}</h1>
+                      <p className="2xl:text-sm xl:text-sm lg:text-sm text-xs">
+                        Created on:{" "}
+                        {new Date(timer.createdAt).toLocaleDateString()}
+                      </p>
+                    </header>
+                    <CountdownComponent
+                      UUID={timer.timerUUID}
+                      createdAt={timer.createdAt}
+                      rawTime={timer.rawTime}
+                      rawUnits={timer.rawUnits}
+                      endsAt={timer.endsAt}
+                      paused={timer.paused}
+                      childLock={timer.childLock}
+                    >
+                      <button
+                        className="focus:outline-none"
+                        onClick={() => router.push(`/id/${timer.timerUUID}`)}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-5 w-5 text-gray-500 duration-200 transition-colors hover:text-gray-400"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+                          <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+                        </svg>
+                      </button>
+
+                      <button
+                        className="focus:outline-none"
+                        onClick={() => setDeleteState(true)}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-5 w-5 text-red-500 duration-200 transition-colors hover:text-red-600"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </button>
+                    </CountdownComponent>
+                  </section>
+
+                  <Delete
+                    state={deleteState}
+                    setDeleteState={setDeleteState}
+                    selectedTimer={timer.timerUUID}
+                  />
                 </motion.section>
               );
             })}
