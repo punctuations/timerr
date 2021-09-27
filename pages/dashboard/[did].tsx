@@ -150,10 +150,10 @@ export default function Dashboard(props) {
               </motion.header>
             </motion.section>
 
-            {timer.prisma.map((timer, i) => {
+            {timer.prisma.map((timer) => {
               return (
                 <motion.section
-                  key={i}
+                  key={timer.name}
                   variants={container}
                   initial="init"
                   animate="enter"
