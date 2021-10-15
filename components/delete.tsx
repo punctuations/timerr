@@ -13,7 +13,7 @@ const Delete = (props: {
   function deleteTimer() {
     fetch(
       process.env.NODE_ENV === "development"
-        ? "http://localhost:3000/api/delete"
+        ? "http://0.0.0.0:3000/api/delete"
         : "https://timerr.vercel.app/api/delete",
       {
         method: "POST",

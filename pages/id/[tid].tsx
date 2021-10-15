@@ -13,7 +13,7 @@ export async function getServerSideProps({ params }) {
 
   const res = await fetch(
     process.env.NODE_ENV === "development"
-      ? "http://localhost:3000/api/read"
+      ? "http://0.0.0.0:3000/api/read"
       : "https://timerr.vercel.app/api/read",
     {
       method: "POST",
@@ -28,13 +28,13 @@ export async function getServerSideProps({ params }) {
 
   const body = await res.json();
 
-  if (body.prisma === null) {
+  if (body.supabase === null) {
     return {
-      props: { prisma: { error: true } },
+      props: { supabase: { error: true } },
     };
   } else {
     return {
-      props: body.prisma,
+      props: body.supabase,
     };
   }
 }
@@ -69,7 +69,7 @@ export default function Timer(props) {
     }).then((r) => r.json());
   const { data } = useSWR(
     process.env.NODE_ENV === "development"
-      ? "http://localhost:3000/api/read"
+      ? "http://0.0.0.0:3000/api/read"
       : "https://timerr.vercel.app/api/read",
     fetcher,
     {
@@ -79,7 +79,7 @@ export default function Timer(props) {
     }
   );
 
-  const timer = data.prisma ? data.prisma : props;
+  const timer = data.supabase ? data.supabase : props;
 
   const [progress, setProgressState] = useState(0);
 
@@ -155,7 +155,7 @@ export default function Timer(props) {
   function deleteTimer() {
     fetch(
       process.env.NODE_ENV === "development"
-        ? "http://localhost:3000/api/delete" // REPLACE WITH YOUR URL
+        ? "http://0.0.0.0:3000/api/delete" // REPLACE WITH YOUR URL
         : "https://timerr.vercel.app/api/delete",
       {
         method: "POST",
@@ -178,7 +178,7 @@ export default function Timer(props) {
         <title>Timerr</title>
       </Head>
 
-      {props.prisma?.error ? (
+      {props.supabase?.error ? (
         <main className="absolute w-full h-full grid place-content-center">
           <motion.section
             variants={container}
@@ -380,7 +380,7 @@ export default function Timer(props) {
                 endsAt={timer.endsAt}
                 paused={timer.paused}
                 childLock={props.childLock}
-                orientation={true}
+                orientation
               />
             </section>
           </main>

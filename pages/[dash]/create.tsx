@@ -98,7 +98,7 @@ export default function CreateNew() {
 
     fetch(
       process.env.NODE_ENV === "development"
-        ? "http://localhost:3000/api/create" // REPLACE WITH YOUR URL
+        ? "http://0.0.0.0:3000/api/create" // REPLACE WITH YOUR URL
         : "https://timerr.vercel.app/api/create",
       {
         method: "POST",

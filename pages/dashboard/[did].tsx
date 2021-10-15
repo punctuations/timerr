@@ -11,7 +11,7 @@ export async function getServerSideProps({ params }) {
 
   const res = await fetch(
     process.env.NODE_ENV === "development"
-      ? "http://localhost:3000/api/dash"
+      ? "http://0.0.0.0:3000/api/dash"
       : "https://timerr.vercel.app/api/dash",
     {
       method: "POST",
@@ -49,7 +49,7 @@ export default function Dashboard(props) {
 
   const { data } = useSWR(
     process.env.NODE_ENV === "development"
-      ? "http://localhost:3000/api/dash"
+      ? "http://0.0.0.0:3000/api/dash"
       : "https://timerr.vercel.app/api/dash",
     fetcher,
     {
@@ -59,7 +59,15 @@ export default function Dashboard(props) {
     }
   );
 
-  const timer = data.prisma ? data : props;
+  const timer = data.supabase ? data : props;
+
+  const timers = data.supabase
+    ? data.supabase.sort((a, b) => {
+        return a.id - b.id;
+      })
+    : props.supabase.sort((a, b) => {
+        return a.id - b.id;
+      });
 
   const container = {
     init: { opacity: 0, y: 10 },
@@ -100,7 +108,7 @@ export default function Dashboard(props) {
         <title>Timerr</title>
       </Head>
 
-      {props.prisma[0] === undefined ? (
+      {props.supabase[0] === undefined ? (
         <main className="absolute w-full h-full grid place-content-center">
           <motion.section
             variants={container}
@@ -128,7 +136,7 @@ export default function Dashboard(props) {
         <>
           {" "}
           <p className="absolute top-3 left-3 2xl:text-base xl:text-base lg:text-base md:text-sm sm:text-xs text-xs">
-            {props.prisma[0].dash}
+            {props.supabase[0].dash}
           </p>
           <main className="absolute w-full h-full flex flex-col justify-center items-center space-y-6">
             <motion.section
@@ -149,11 +157,12 @@ export default function Dashboard(props) {
                 </motion.p>
               </motion.header>
             </motion.section>
+            <pre>{JSON.stringify(timer.supabase, null, 2)}</pre>
 
-            {timer.prisma.map((timer) => {
+            {timers.map((timer, i) => {
               return (
                 <motion.section
-                  key={timer.name}
+                  key={i}
                   variants={container}
                   initial="init"
                   animate="enter"
@@ -168,6 +177,7 @@ export default function Dashboard(props) {
                       </p>
                     </header>
                     <CountdownComponent
+                      key={i}
                       UUID={timer.timerUUID}
                       createdAt={timer.createdAt}
                       rawTime={timer.rawTime}
@@ -225,7 +235,7 @@ export default function Dashboard(props) {
               initial="init"
               animate="enter"
               className="2xl:w-1/4 xl:w-1/4 lg:w-1/3 md:w-1/3 w-1/2 transition-colors duration-300 border-gray-200 hover:border-blue-500 hover:text-blue-500 border p-5 rounded-md flex items-center justify-center shadow-md focus:outline-none"
-              onClick={() => router.push(`/${props.prisma[0].dash}/create`)}
+              onClick={() => router.push(`/${props.supabase[0].dash}/create`)}
             >
               Create new &rarr;
             </motion.button>

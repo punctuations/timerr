@@ -5,10 +5,7 @@
 	"scripts": {
 		"dev": "next",
 		"build": "next build",
-		"start": "next start",
-		"prisma:generate": "prisma generate",
-		"migrate:dev": "prisma migrate dev --preview-feature",
-		"migrate:prod": "prisma migrate deploy --preview-feature"
+		"start": "next start"
 	},
 	"author": "Matt <matt@dont-ping.me>",
 	"license": "MIT",
@@ -19,7 +16,7 @@
 		"@emotion/styled": "^11",
 		"@material-ui/core": "^4.11.3",
 		"@material-ui/pickers": "^3.3.10",
-		"@prisma/client": "^2.18.0",
+		"@supabase/supabase-js": "^1.24.0",
 		"framer-motion": "^4",
 		"moment": "^2.29.1",
 		"next": "10.0.4",
@@ -36,7 +33,6 @@
 		"@types/react": "^17.0.0",
 		"autoprefixer": "^10.1.0",
 		"postcss": "^8.2.10",
-		"prisma": "^2.18.0",
 		"tailwindcss": "^2.1.2",
 		"typescript": "^4.1.3"
 	}

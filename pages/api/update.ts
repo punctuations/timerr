@@ -1,18 +1,17 @@
-import prisma from "../../lib/db";
 import { NextApiRequest, NextApiResponse } from "next";
+
+import { supabase } from "@lib/supabaseClient";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method == "POST") {
-    await prisma.timer
+    const { error } = await supabase
+      .from("Timer")
       .update({
-        where: {
-          timerUUID: req.body.uuid,
-        },
-        data: {
-          endsAt: req.body.endsAt,
-        },
+        endsAt: req.body.endsAt,
+        updatedAt: new Date().toISOString(),
       })
-      .catch((err) => console.log(err));
+      .match({ timerUUID: req.body.uuid });
+    if (error) return res.status(500).json({ success: false, data: error });
 
     return res.status(200).json({
       success: true,

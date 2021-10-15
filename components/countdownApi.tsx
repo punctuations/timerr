@@ -22,7 +22,7 @@ export const CountdownComponent = (props: {
     if (props.paused) {
       fetch(
         process.env.NODE_ENV === "development"
-          ? "http://localhost:3000/api/update" // REPLACE WITH YOUR URL
+          ? "http://0.0.0.0:3000/api/update" // REPLACE WITH YOUR URL
           : "https://timerr.vercel.app/api/update",
         {
           method: "POST",
@@ -58,7 +58,7 @@ export const CountdownComponent = (props: {
   const handlePauseClick = (): void => {
     fetch(
       process.env.NODE_ENV === "development"
-        ? "http://localhost:3000/api/pause" // REPLACE WITH YOUR URL
+        ? "http://0.0.0.0:3000/api/pause" // REPLACE WITH YOUR URL
         : "https://timerr.vercel.app/api/pause",
       {
         method: "POST",
@@ -78,7 +78,7 @@ export const CountdownComponent = (props: {
 
     fetch(
       process.env.NODE_ENV === "development"
-        ? "http://localhost:3000/api/reset" // REPLACE WITH YOUR URL
+        ? "http://0.0.0.0:3000/api/reset" // REPLACE WITH YOUR URL
         : "https://timerr.vercel.app/api/reset",
       {
         method: "POST",
